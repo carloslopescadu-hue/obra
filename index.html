@@ -107,6 +107,19 @@ svg.i { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none;
   .top .btn { padding: 8px 12px; }
 }
 
+.how { margin-top: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 12px; box-shadow: var(--shadow-sm); }
+.how-head { padding: 2px 4px 8px; }
+.how .eyebrow { color: var(--accent); }
+.how-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.how-steps button { width: 100%; height: 100%; display: flex; align-items: center; gap: 12px; text-align: left; border: 1px solid var(--line); background: var(--surface-2); border-radius: 12px; padding: 12px; transition: border-color .15s, background .15s; }
+.how-steps button:hover { border-color: var(--accent); background: var(--accent-soft); }
+.how-n { flex: none; width: 26px; height: 26px; border-radius: 50%; background: var(--primary); color: var(--primary-ink); display: grid; place-items: center; font-weight: 800; font-size: 13px; }
+.how-ic { flex: none; color: var(--accent); display: grid; }
+.how-ic svg.i { width: 22px; height: 22px; }
+.how-t { display: flex; flex-direction: column; min-width: 0; line-height: 1.3; }
+.how-t b { font-size: 15px; }
+.how-t small { color: var(--muted); font-size: 12.5px; }
+@media (max-width: 760px) { .how-steps { grid-template-columns: minmax(0, 1fr); gap: 6px; } .how-steps button { padding: 10px 12px; } }
 .demo { background: var(--wait-bg); color: var(--wait); font-size: 13px; }
 .demo .wrap { padding-block: 8px; }
 
@@ -119,12 +132,14 @@ svg.i { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none;
 .hero-total { text-align: right; }
 .hero-total b { display: block; font-family: var(--display); font-size: clamp(26px, 5vw, 36px); font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1.05; }
 .hero-total span { font-size: 12.5px; color: var(--hero-muted); }
-.summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 18px; }
+.summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 18px; }
+@media (max-width: 860px) { .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .kpi { background: color-mix(in srgb, var(--hero-ink) 6%, transparent); border: 1px solid color-mix(in srgb, var(--hero-ink) 10%, transparent); border-radius: 14px; padding: 11px 13px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .kpi b { font-size: 18px; font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .kpi span { font-size: 11.5px; color: var(--hero-muted); letter-spacing: .03em; display: flex; align-items: center; gap: 6px; }
 .kpi span i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-.kpi.ok i { background: #4FC584; } .kpi.wait i { background: #EDB848; } .kpi.none i { background: var(--hero-muted); }
+.kpi.ok i { background: #4FC584; } .kpi.wait i { background: #EDB848; } .kpi.cob i { background: #8FB2E8; } .kpi.dif i { background: var(--hero-accent); }
+.kpi.dif b { color: var(--hero-accent); }
 @media (max-width: 560px) {
   .hero { padding: 18px 16px 14px; border-radius: 18px; }
   .hero-total { text-align: left; }
@@ -182,7 +197,13 @@ svg.i { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none;
 .flags svg.i { width: 14px; height: 14px; }
 .flags .ready { color: var(--accent); font-weight: 700; }
 .card-status { flex: none; }
-.fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)) minmax(0, 1.1fr) repeat(2, minmax(0, 1fr)); gap: 10px; padding-top: 14px; border-top: 1px solid var(--line); align-items: start; }
+.fields { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 10px; padding-top: 14px; border-top: 1px solid var(--line); align-items: start; }
+.fields > .cell { grid-column: span 2; }
+.dif-cell { background: var(--ok-bg); border-radius: var(--r-sm); padding: 7px 12px; align-self: stretch; justify-content: center; }
+.dif-cell .lbl { color: var(--ok); }
+.dif { font-family: var(--display); font-weight: 800; font-size: 18px; font-variant-numeric: tabular-nums; line-height: 1.2; color: var(--ok); }
+.dif.zero { color: var(--muted); font-family: var(--font); font-weight: 600; font-size: 13.5px; }
+.dif.neg { color: var(--no); }
 .fields .calc { padding: 4px 0 0; }
 .cell { min-width: 0; display: flex; flex-direction: column; gap: 5px; }
 .lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; font-weight: 700; }
@@ -203,7 +224,9 @@ svg.i { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none;
 .empty p { margin: 0; max-width: 46ch; }
 @media (max-width: 860px) {
   .fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .fields .total-cell { grid-column: 1 / -1; flex-direction: row; align-items: center; justify-content: space-between; }
+  .fields > .cell { grid-column: span 1; }
+  .fields > .total-cell { grid-column: 1 / -1; flex-direction: row; align-items: center; justify-content: space-between; }
+  .fields > .dif-cell { flex-direction: column; justify-content: center; }
 }
 @media (max-width: 560px) {
   .card { padding: 14px; gap: 12px; }
@@ -246,7 +269,7 @@ svg.i { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none;
 
 /* ---------- Ficha (painel lateral) ---------- */
 .scrim { position: fixed; inset: 0; background: var(--scrim); z-index: 40; backdrop-filter: blur(2px); }
-.drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(640px, 100%); background: var(--bg); z-index: 41; overflow-y: auto; box-shadow: var(--shadow-lg); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(640px, 100%); background: var(--bg); z-index: 41; overflow-y: auto; box-shadow: var(--shadow-lg); }
 .d-head { position: sticky; top: 0; z-index: 2; background: var(--hero); color: var(--hero-ink); padding: calc(12px + env(safe-area-inset-top, 0px)) 16px 12px; display: flex; align-items: center; gap: 10px; }
 .d-head .os { font-size: 13px; color: var(--hero-accent); }
 .d-head .icon-btn { color: var(--hero-ink); }
@@ -317,6 +340,12 @@ textarea.in { resize: vertical; min-height: 80px; line-height: 1.5; }
 .bigtotal span { font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: .08em; font-size: 12px; }
 .bigtotal b { font-family: var(--display); font-size: 26px; font-weight: 800; font-variant-numeric: tabular-nums; }
 .from-list { font-size: 12.5px; color: var(--ok); }
+.bigdif { display: flex; justify-content: space-between; align-items: baseline; background: var(--ok-bg); border-radius: 12px; padding: 12px 14px; }
+.bigdif span { font-weight: 700; color: var(--ok); text-transform: uppercase; letter-spacing: .08em; font-size: 12px; }
+.bigdif b { font-family: var(--display); font-size: 24px; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--ok); }
+.bigdif b.neg { color: var(--no); }
+.d-foot { position: sticky; bottom: 0; z-index: 2; display: flex; gap: 10px; padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)); background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid var(--line); }
+.d-foot .btn { flex: 1; padding: 12px 16px; font-size: 15px; }
 
 /* ---------- Modais ---------- */
 .modal { position: fixed; z-index: 51; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(560px, calc(100% - 24px)); max-height: calc(100% - 32px); overflow-y: auto; background: var(--surface); border-radius: 20px; box-shadow: var(--shadow-lg); }
@@ -351,7 +380,7 @@ main.wrap { padding-block: 0 56px; }
 </svg>
 <header class="top">
   <div class="wrap">
-    <div class="brand"><svg class="emblem" aria-hidden="true"><use href="#elmo"/></svg><div class="brand-txt"><h1 id="projName">Obra da Casa</h1><span id="projSub">Serviços · Carlos e Júlio</span></div></div>
+    <div class="brand"><svg class="emblem" aria-hidden="true"><use href="#elmo"/></svg><div class="brand-txt"><h1 id="projName">Obra da Casa</h1><span id="projSub">Serviços</span></div></div>
     <span class="saving" id="saving" aria-live="polite"></span>
     <button class="btn owner" id="ownerBtn" data-act="owner"></button>
     <button class="btn bronze" data-act="new"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>Novo<span class="btn-label-long"> serviço</span></span></button>
@@ -364,9 +393,17 @@ main.wrap { padding-block: 0 56px; }
     <svg class="hero-mark" aria-hidden="true"><use href="#elmo"/></svg>
     <div class="hero-head">
       <div><div class="eyebrow">Frente de obra</div><h2 id="heroTitle">Serviços da casa</h2></div>
-      <div class="hero-total"><b id="heroTotal" class="num">R$ 0,00</b><span>total em aberto</span></div>
+      <div class="hero-total"><b id="heroTotal" class="num">R$ 0,00</b><span>valor dos serviços em aberto</span></div>
     </div>
     <div class="summary" id="summary"></div>
+  </section>
+  <section class="how" aria-label="Como funciona">
+    <div class="how-head"><span class="eyebrow">Como funciona</span></div>
+    <ol class="how-steps">
+      <li><button data-act="new"><span class="how-n">1</span><span class="how-ic"><svg class="i" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span><span class="how-t"><b>Tire a foto</b><small>do problema na casa</small></span></button></li>
+      <li><button data-act="new"><span class="how-n">2</span><span class="how-ic"><svg class="i" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v1a7 7 0 0 0 14 0v-1M12 18v4M8 22h8"/></svg></span><span class="how-t"><b>Grave um áudio</b><small>de até 1 minuto explicando o problema</small></span></button></li>
+      <li><button data-act="new"><span class="how-n">3</span><span class="how-ic"><svg class="i" viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></span><span class="how-t"><b>Envie</b><small>o Claude sugere a solução e o prestador orça</small></span></button></li>
+    </ol>
   </section>
   <div class="bar">
     <div class="tabs" role="group" aria-label="Visualização">
@@ -376,7 +413,7 @@ main.wrap { padding-block: 0 56px; }
     <div class="chips" id="filters"></div>
   </div>
   <div id="content"></div>
-  <div class="foot"><svg aria-hidden="true"><use href="#elmo"/></svg>Obra da Casa · Carlos e Júlio</div>
+  <div class="foot"><svg aria-hidden="true"><use href="#elmo"/></svg>Obra da Casa</div>
 </main>
 
 <div id="layer"></div>
@@ -411,6 +448,8 @@ function num(v) {
 }
 function money(n) { return BRL.format(num(n)); }
 function moneyIn(n) { n = num(n); return n ? NUM.format(n) : ''; }
+function cobradoIn(v) { return (v === '' || v == null) ? '' : NUM.format(num(v)); }
+function difHTML(it) { return it.temCobrado ? money(it.diferenca) : '—'; }
 function pd(s) { if (!/^\d{4}-\d{2}-\d{2}$/.test(s || '')) return null; var p = s.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
 function iso(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
 function dm(s) { var d = pd(s); return d ? d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) : '—'; }
@@ -451,6 +490,8 @@ function computeTotals(it) {
   it.materialFromList = priced.length > 0;
   it.materialTotal = priced.length ? priced.reduce(function (s, m) { return s + num(m.valor); }, 0) : num(it.materialManual);
   it.total = num(it.maoDeObra) + it.materialTotal;
+  it.temCobrado = it.valorCobrado !== '' && it.valorCobrado != null;
+  it.diferenca = it.temCobrado ? Math.round((it.total - num(it.valorCobrado)) * 100) / 100 : 0;
   return it;
 }
 function setItem(it) {
@@ -488,7 +529,6 @@ function photoSrc(f) { return f.url || ('https://drive.google.com/thumbnail?id='
 function applyConfig(d) {
   state.hasClaude = !!d.hasClaude; state.hasTranscription = !!d.hasTranscription; state.autoSuggest = d.autoSuggest !== false;
   if (d.dono) CONFIG.DONO = d.dono; if (d.prestador) CONFIG.PRESTADOR = d.prestador;
-  $('#projSub').textContent = 'Serviços · ' + CONFIG.DONO + ' e ' + CONFIG.PRESTADOR;
 }
 function actor() { return isOwner() ? CONFIG.DONO : (LS.get('obra.who') || CONFIG.PRESTADOR); }
 function load() {
@@ -525,19 +565,23 @@ function isOwner() { return !!state.pin; }
 function renderOwner() {
   var b = $('#ownerBtn');
   b.className = 'btn owner' + (isOwner() ? ' on' : '');
-  b.innerHTML = isOwner() ? ICON.unlock + '<span class="own-txt">' + esc(CONFIG.DONO) + '</span>' : ICON.lock + '<span class="own-txt">Sou o ' + esc(CONFIG.DONO) + '</span>';
-  b.setAttribute('aria-label', isOwner() ? 'Aprovação liberada (' + CONFIG.DONO + ')' : 'Sou o ' + CONFIG.DONO);
+  b.innerHTML = isOwner() ? ICON.unlock + '<span class="own-txt">Aprovação liberada</span>' : ICON.lock + '<span class="own-txt">Aprovar</span>';
+  b.setAttribute('aria-label', isOwner() ? 'Aprovação liberada neste aparelho' : 'Aprovar serviços com PIN');
   b.title = isOwner() ? 'Aprovação liberada neste aparelho. Toque para bloquear.' : 'Digite seu PIN para aprovar serviços';
 }
 
 function renderSummary() {
-  var t = { aprovado: 0, aguardando: 0, nao_aprovado: 0 }, n = { aprovado: 0, aguardando: 0, nao_aprovado: 0 }, sem = 0;
-  state.items.forEach(function (it) { t[it.status] = (t[it.status] || 0) + it.total; n[it.status] = (n[it.status] || 0) + 1; if (!it.total) sem++; });
+  var t = { aprovado: 0, aguardando: 0, nao_aprovado: 0 }, n = { aprovado: 0, aguardando: 0, nao_aprovado: 0 }, cob = 0, dif = 0;
+  state.items.forEach(function (it) {
+    t[it.status] = (t[it.status] || 0) + it.total; n[it.status] = (n[it.status] || 0) + 1;
+    if (it.status !== 'nao_aprovado' && it.temCobrado) { cob += num(it.valorCobrado); dif += it.diferenca; }
+  });
   $('#heroTotal').textContent = money(t.aprovado + t.aguardando);
   $('#summary').innerHTML =
     kpi('ok', money(t.aprovado), 'Aprovado · ' + n.aprovado) +
     kpi('wait', money(t.aguardando), 'Aguardando · ' + n.aguardando) +
-    kpi('none', String(sem), 'Sem orçamento');
+    kpi('cob', money(cob), 'Total cobrado') +
+    kpi('dif', money(dif), 'Total da diferença');
   function kpi(c, v, l) { return '<div class="kpi ' + c + '"><b>' + esc(v) + '</b><span><i></i>' + esc(l) + '</span></div>'; }
 }
 
@@ -585,6 +629,8 @@ function listHTML() {
         '<label class="cell money"><span class="lbl">Mão de obra</span><input class="in" inputmode="decimal" placeholder="0,00" data-id="' + it.id + '" data-f="maoDeObra" value="' + moneyIn(it.maoDeObra) + '"></label>' +
         '<div class="cell money"><span class="lbl">Material</span>' + materialCell(it) + '</div>' +
         '<div class="cell total-cell"><span class="lbl">Total</span><span class="total' + (it.total ? '' : ' zero') + '" data-calc="total" data-id="' + it.id + '">' + (it.total ? money(it.total) : 'sem valor') + '</span></div>' +
+        '<label class="cell money"><span class="lbl">Valor cobrado</span><input class="in" inputmode="decimal" placeholder="0,00" data-id="' + it.id + '" data-f="valorCobrado" value="' + cobradoIn(it.valorCobrado) + '"></label>' +
+        '<div class="cell dif-cell"><span class="lbl">Diferença</span><span class="dif' + (it.temCobrado ? '' : ' zero') + '" data-calc="dif" data-id="' + it.id + '">' + difHTML(it) + '</span></div>' +
         '<label class="cell"><span class="lbl">Início</span><input class="in" type="date" data-id="' + it.id + '" data-f="inicio" value="' + esc(it.inicio) + '"></label>' +
         '<label class="cell"><span class="lbl">Término</span><input class="in" type="date" data-id="' + it.id + '" data-f="termino" value="' + esc(it.termino) + '"' + (it.inicio ? ' min="' + esc(it.inicio) + '"' : '') + '></label>' +
       '</div>' +
@@ -689,7 +735,7 @@ function newHTML() {
       (d.step ? '<div class="progress"><span class="spin"></span>' + esc(d.step) + '</div>'
         : state.hasClaude && state.autoSuggest ? '<p class="note" style="margin:0">Ao salvar, o áudio é transcrito e o Claude escreve como resolver e quais materiais usar.</p>' : '') +
     '</div>' +
-    '<div class="m-foot"><button class="btn ghost" data-act="close-modal">Cancelar</button><button class="btn primary" data-act="create"' + (d.saving ? ' disabled' : '') + '>' + (d.saving ? 'Salvando…' : 'Salvar serviço') + '</button></div>';
+    '<div class="m-foot"><button class="btn ghost" data-act="close-modal">Cancelar</button><button class="btn primary" data-act="create"' + (d.saving ? ' disabled' : '') + '>' + (d.saving ? 'Enviando…' : 'Enviar') + '</button></div>';
 }
 
 function pinHTML() {
@@ -749,11 +795,13 @@ function drawerHTML(it) {
     '<div class="mat-sum"><span>Soma dos itens marcados com valor</span><b class="num" data-calc="matsum" data-id="' + it.id + '">' + money(sumList) + '</b></div></section>';
 
   /* Orçamento */
-  h += '<section class="sec"><h3>Orçamento do ' + esc(CONFIG.PRESTADOR) + '</h3><div class="grid2">' +
+  h += '<section class="sec"><h3>Orçamento</h3><div class="grid2">' +
     '<label class="field"><span>Mão de obra (R$)</span><input class="in" style="text-align:right" id="d-mo" inputmode="decimal" placeholder="0,00" data-id="' + it.id + '" data-f="maoDeObra" value="' + moneyIn(it.maoDeObra) + '"></label>' +
     '<div class="field"><span>Material (R$)</span>' + materialCell(it, true) + '</div></div>' +
     (it.materialFromList ? '<p class="from-list" style="margin:0">O valor do material vem da soma da lista acima.</p>' : '') +
-    '<div class="bigtotal"><span>Total</span><b data-calc="total" data-id="' + it.id + '">' + money(it.total) + '</b></div></section>';
+    '<div class="bigtotal"><span>Total</span><b data-calc="total" data-id="' + it.id + '">' + money(it.total) + '</b></div>' +
+    '<label class="field"><span>Valor cobrado (R$)</span><input class="in" style="text-align:right" id="d-cob" inputmode="decimal" placeholder="0,00" data-id="' + it.id + '" data-f="valorCobrado" value="' + cobradoIn(it.valorCobrado) + '"></label>' +
+    '<div class="bigdif"><span>Diferença</span><b class="' + (it.diferenca < 0 ? 'neg' : '') + '" data-calc="dif" data-id="' + it.id + '">' + difHTML(it) + '</b></div></section>';
 
   /* Datas */
   h += '<section class="sec"><h3>Execução prevista</h3><div class="grid2">' +
@@ -766,8 +814,9 @@ function drawerHTML(it) {
     (isOwner() ? (state.confirmDel
       ? '<div class="confirm">Apagar ' + osNum(it.numero) + ' com fotos e áudios? Não dá para desfazer.<div class="actions"><button class="btn small danger" data-act="del-go">Apagar serviço</button><button class="btn small" data-act="del-cancel">Cancelar</button></div></div>'
       : '<div class="actions"><button class="btn small ghost danger" data-act="del-ask">' + ICON.trash + 'Apagar serviço</button></div>')
-      : '<p class="note" style="margin:0">Só o ' + esc(CONFIG.DONO) + ' aprova, com PIN.</p>') + '</section>';
-  return h + '</div>';
+      : '<p class="note" style="margin:0">A aprovação é feita com PIN.</p>') + '</section>';
+  return h + '</div>' +
+    '<div class="d-foot"><button class="btn" data-act="back">' + ICON.left + 'Voltar</button><button class="btn primary" data-act="save-close"' + (state.closing ? ' disabled' : '') + '>' + (state.closing ? '<span class="spin"></span>Salvando…' : '<svg class="i" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Salvar') + '</button></div>';
 }
 
 function updateCalcs() {
@@ -776,6 +825,7 @@ function updateCalcs() {
       var k = el.getAttribute('data-calc');
       if (k === 'total') { el.textContent = it.total ? money(it.total) : (el.closest('.bigtotal') ? money(0) : 'sem valor'); el.classList.toggle('zero', !it.total && !el.closest('.bigtotal')); }
       if (k === 'mat') el.firstChild.textContent = money(it.materialTotal);
+      if (k === 'dif') { el.textContent = difHTML(it); el.classList.toggle('zero', !it.temCobrado && !el.closest('.bigdif')); el.classList.toggle('neg', it.temCobrado && it.diferenca < 0); }
       if (k === 'matsum') el.textContent = money((it.materiais || []).filter(function (m) { return m.usar && num(m.valor) > 0; }).reduce(function (a, m) { return a + num(m.valor); }, 0));
     });
   });
@@ -787,6 +837,7 @@ function saveField(id, f, raw, input) {
   var it = itemById(id); if (!it) return;
   var v = raw;
   if (f === 'maoDeObra' || f === 'materialManual') { v = num(raw); if (input) input.value = moneyIn(v); }
+  if (f === 'valorCobrado') { v = String(raw).trim() === '' ? '' : num(raw); if (input) input.value = cobradoIn(v); }
   if (f === 'titulo' && !String(v).trim()) { if (input) input.value = it.titulo; return; }
   if (it[f] === v) return;
   it[f] = v; computeTotals(it); updateCalcs();
@@ -816,6 +867,33 @@ function saveMaterials(it) {
     upd(it.id, 'update', [it.id, { materiais: list }, actor()]).then(function () { matSent[it.id] = v; }, function () {});
     matSent[it.id] = v;
   }, 500);
+}
+function flushAll() {
+  var a = document.activeElement;
+  if (a && a.blur && /^(INPUT|TEXTAREA)$/.test(a.tagName)) a.blur();
+  Object.keys(matTimers).forEach(function (id) {
+    if (!matTimers[id]) return;
+    clearTimeout(matTimers[id]); matTimers[id] = null;
+    var it = itemById(id); if (!it) return;
+    var v = matVer[id];
+    upd(id, 'update', [id, { materiais: it.materiais.filter(function (m) { return m.nome || m.qtd || num(m.valor); }) }, actor()]).then(function () { matSent[id] = v; }, function () {});
+    matSent[id] = v;
+  });
+}
+function saveAndClose() {
+  if (state.closing) return;
+  flushAll();
+  state.closing = true; renderLayer();
+  var t0 = Date.now(), failed = false;
+  var before = toastTimer;
+  (function wait() {
+    setTimeout(function () {
+      if (state.pending > 0 && Date.now() - t0 < 20000) return wait();
+      state.closing = false;
+      if (state.pending > 0) { toast('Ainda salvando. Aguarde um instante e tente de novo.'); renderLayer(); return; }
+      state.openId = null; render(); toast('Alterações salvas.');
+    }, 150);
+  })();
 }
 function mergeServer(srv) {
   if (!srv) return;
@@ -859,7 +937,7 @@ function createService() {
     toast('Grave um áudio, anexe uma foto ou escreva o que precisa ser feito.'); return;
   }
   if (!d.titulo.trim() && !(state.hasClaude && state.autoSuggest)) { toast('Escreva um título para o serviço.'); var t = $('#n-titulo'); if (t) t.focus(); return; }
-  d.saving = true; d.step = 'Criando o serviço…'; renderLayer();
+  d.saving = true; d.step = 'Enviando o serviço…'; renderLayer();
   LS.set('obra.who', d.criadoPor);
   var newId, step = function (txt) { d.step = txt; renderLayer(); };
   tracked(call('create', { titulo: d.titulo, descricao: d.descricao, criadoPor: d.criadoPor }).then(function (it) {
@@ -983,7 +1061,8 @@ document.addEventListener('click', function (e) {
   switch (act) {
     case 'view': state.view = b.getAttribute('data-view'); LS.set('obra.view', state.view); render(); break;
     case 'filter': state.filter = b.getAttribute('data-filter'); render(); break;
-    case 'close': if (state.rec) stopRecording(); state.openId = null; render(); break;
+    case 'close': case 'back': if (state.rec) stopRecording(); flushAll(); state.openId = null; render(); break;
+    case 'save-close': saveAndClose(); break;
     case 'new': state.draft = newDraft(); state.modal = 'new'; renderLayer(); setTimeout(function () { var t = $('#n-titulo'); if (t) t.focus(); }, 30); break;
     case 'close-modal': if (state.rec) { state.rec.rec.onstop = null; state.rec.stream.getTracks().forEach(function (t) { t.stop(); }); clearInterval(state.rec.timer); state.rec = null; } state.modal = null; state.draft = null; renderLayer(); break;
     case 'who': readDraftInputs(); state.draft.criadoPor = b.getAttribute('data-who'); renderLayer(); break;
@@ -1065,13 +1144,13 @@ document.addEventListener('keydown', function (e) {
   if (e.key === 'Escape') {
     if (state.lightbox) { state.lightbox = null; renderLayer(); }
     else if (state.modal) { $('[data-act="close-modal"]').click(); }
-    else if (state.openId) { state.openId = null; render(); }
+    else if (state.openId) { flushAll(); state.openId = null; render(); }
   }
   if (e.key === 'Enter' && e.target.id === 'pinIn') $('[data-act="pin-ok"]').click();
   if (e.key === 'Enter' && e.target.matches('input.in[data-f], input.in[data-m]')) e.target.blur();
 });
 
-var toastTimer;
+var toastTimer = null;
 function toast(msg) {
   var el = $('#toast');
   if (!el) { el = document.createElement('div'); el.id = 'toast'; el.className = 'toast'; el.setAttribute('role', 'status'); document.body.appendChild(el); }
@@ -1109,7 +1188,7 @@ var Demo = (function () {
       {
         id: 'ex1', numero: 1, criadoEm: addDays(t, -2).toISOString(), criadoPor: 'Carlos', titulo: 'Infiltração na parede do quarto',
         descricao: 'Mancha escura perto do rodapé, tinta estufando e descascando. Piora depois de chuva forte. A parede faz divisa com o banheiro.',
-        maoDeObra: 1200, materialManual: 0, inicio: d(4), termino: d(13), status: 'aguardando', observacoes: '',
+        maoDeObra: 1200, materialManual: 0, valorCobrado: 1000, inicio: d(4), termino: d(13), status: 'aguardando', observacoes: '',
         fotos: [{ id: 'f1', url: wall(), nome: 'parede.jpg' }], audios: [], sugestaoStatus: 'ok',
         sugestao: {
           diagnostico: 'A mancha começando no rodapé, com tinta estufada, indica água entrando na parede. Como ela faz divisa com o banheiro e piora com chuva, as causas mais prováveis são vazamento em tubulação embutida, falha no rejunte ou na impermeabilização do box, ou umidade subindo do piso. Antes de mexer no acabamento, é preciso confirmar a origem — se não, a mancha volta.',
@@ -1140,19 +1219,19 @@ var Demo = (function () {
       {
         id: 'ex2', numero: 2, criadoEm: addDays(t, -5).toISOString(), criadoPor: 'Carlos', titulo: 'Trocar tomadas e interruptores da cozinha',
         descricao: 'Seis tomadas amareladas, duas com mau contato. Aproveitar para trocar para o padrão de 20 A perto da bancada.',
-        maoDeObra: 450, materialManual: 380, inicio: d(-1), termino: d(1), status: 'aprovado', observacoes: 'Júlio vem às 8h. Deixar a cozinha livre.',
+        maoDeObra: 450, materialManual: 380, valorCobrado: 600, inicio: d(-1), termino: d(1), status: 'aprovado', observacoes: 'Júlio vem às 8h. Deixar a cozinha livre.',
         fotos: [], audios: [], sugestao: null, sugestaoStatus: '', materiais: []
       },
       {
         id: 'ex3', numero: 3, criadoEm: addDays(t, -1).toISOString(), criadoPor: 'Júlio', titulo: 'Pintura do muro da frente',
         descricao: 'Muro com bolor na base e pintura desbotada, cerca de 25 m lineares por 2 m de altura.',
-        maoDeObra: 0, materialManual: 0, inicio: d(15), termino: d(19), status: 'aguardando', observacoes: '',
+        maoDeObra: 0, materialManual: 0, valorCobrado: '', inicio: d(15), termino: d(19), status: 'aguardando', observacoes: '',
         fotos: [], audios: [], sugestao: null, sugestaoStatus: '', materiais: []
       },
       {
         id: 'ex4', numero: 4, criadoEm: addDays(t, -8).toISOString(), criadoPor: 'Carlos', titulo: 'Porcelanato na área da churrasqueira',
         descricao: 'Trocar piso cerâmico por porcelanato 80x80, uns 22 m².',
-        maoDeObra: 2600, materialManual: 4100, inicio: '', termino: '', status: 'nao_aprovado', observacoes: 'Deixar para o ano que vem.',
+        maoDeObra: 2600, materialManual: 4100, valorCobrado: '', inicio: '', termino: '', status: 'nao_aprovado', observacoes: 'Deixar para o ano que vem.',
         fotos: [], audios: [], sugestao: null, sugestaoStatus: '', materiais: []
       }
     ];
@@ -1211,7 +1290,6 @@ var Demo = (function () {
 
 /* ===================== Início ===================== */
 $('#projName').textContent = CONFIG.PROJETO;
-$('#projSub').textContent = 'Serviços · ' + CONFIG.DONO + ' e ' + CONFIG.PRESTADOR;
 render();
 load();
 </script>

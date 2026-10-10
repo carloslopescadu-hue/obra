@@ -21,11 +21,11 @@ const HEADERS = [
   'id', 'numero', 'criadoEm', 'atualizadoEm', 'criadoPor', 'titulo', 'descricao',
   'maoDeObra', 'materialManual', 'materialTotal', 'total', 'inicio', 'termino',
   'status', 'observacoes', 'fotos', 'audios', 'materiais', 'sugestao', 'sugestaoStatus',
-  'tituloAuto', 'avisos'
+  'tituloAuto', 'avisos', 'valorCobrado', 'diferenca'
 ];
 const JSON_FIELDS = ['fotos', 'audios', 'materiais', 'sugestao', 'avisos'];
-const EDITABLE = ['titulo', 'descricao', 'maoDeObra', 'materialManual', 'inicio', 'termino', 'observacoes', 'materiais'];
-const VALUE_FIELDS = ['maoDeObra', 'materialManual', 'materiais'];
+const EDITABLE = ['titulo', 'descricao', 'maoDeObra', 'materialManual', 'valorCobrado', 'inicio', 'termino', 'observacoes', 'materiais'];
+const VALUE_FIELDS = ['maoDeObra', 'materialManual', 'valorCobrado', 'materiais'];
 const STATUSES = ['aguardando', 'aprovado', 'nao_aprovado'];
 const STATUS_LABEL = { aguardando: 'Aguardando', aprovado: 'Aprovado', nao_aprovado: 'Não aprovado' };
 const TITULO_PROVISORIO = 'Novo serviço';
@@ -75,7 +75,7 @@ const ROUTES = {
         criadoPor: clean_(fields.criadoPor, 40),
         titulo: titulo || TITULO_PROVISORIO, tituloAuto: !titulo,
         descricao: clean_(fields.descricao, 4000),
-        maoDeObra: 0, materialManual: 0, materialTotal: 0, total: 0,
+        maoDeObra: 0, materialManual: 0, materialTotal: 0, total: 0, valorCobrado: '', diferenca: 0,
         inicio: '', termino: '', status: 'aguardando', observacoes: '',
         fotos: [], audios: [], materiais: [], sugestao: null, sugestaoStatus: '',
         avisos: { novo: now }
@@ -91,6 +91,7 @@ const ROUTES = {
         if (EDITABLE.indexOf(k) === -1) return;
         let v = patch[k];
         if (k === 'maoDeObra' || k === 'materialManual') v = num_(v);
+        else if (k === 'valorCobrado') v = String(v == null ? '' : v).trim() === '' ? '' : num_(v);
         else if (k === 'inicio' || k === 'termino') v = /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : '';
         else if (k === 'materiais') v = sanitizeMaterials_(v);
         else v = clean_(v, k === 'titulo' ? 140 : 4000);
@@ -320,7 +321,9 @@ function sendMail_(to, subject, intro, it, cta) {
     (it.descricao ? '<p style="color:#59645F;margin:0 0 12px">' + esc_(it.descricao) + '</p>' : '') +
     '<table style="border-collapse:collapse;font-size:14px">' +
     linha('Status', STATUS_LABEL[it.status]) + linha('Mão de obra', brl(it.maoDeObra)) + linha('Material', brl(it.materialTotal)) +
-    linha('Total', brl(it.total)) + linha('Execução', datas) + '</table>' +
+    linha('Total', brl(it.total)) +
+    (it.valorCobrado !== '' ? linha('Valor cobrado', brl(it.valorCobrado)) + linha('Diferença', brl(it.diferenca)) : '') +
+    linha('Execução', datas) + '</table>' +
     '<p style="font-size:14px">' + esc_(cta) + '</p>' +
     (prop_('PAGE_URL') ? '<p><a href="' + link + '" style="display:inline-block;background:#F2B705;color:#17201C;padding:10px 18px;border-radius:8px;font-weight:700;text-decoration:none">Abrir ' + osNum_(it) + '</a></p>' : '') +
     '</div>';
@@ -368,10 +371,18 @@ function setup() {
 
 /* ---------- Planilha ---------- */
 
+let SHEET_CACHE_ = null;
 function sheet_() {
+  if (SHEET_CACHE_) return SHEET_CACHE_;
   const id = prop_('SHEET_ID');
   if (!id) throw new Error('Rode a função setup antes de usar.');
-  return SpreadsheetApp.openById(id).getSheetByName(SHEET_NAME);
+  const sh = SpreadsheetApp.openById(id).getSheetByName(SHEET_NAME);
+  if (sh.getLastColumn() < HEADERS.length) {
+    sh.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]).setFontWeight('bold');
+    sh.getRange(1, 1, sh.getMaxRows(), HEADERS.length).setNumberFormat('@');
+  }
+  SHEET_CACHE_ = sh;
+  return sh;
 }
 
 function readAll_() {
@@ -413,6 +424,8 @@ function computeTotals_(it) {
   const priced = (it.materiais || []).filter(function (m) { return m.usar && num_(m.valor) > 0; });
   it.materialTotal = priced.length ? priced.reduce(function (s, m) { return s + num_(m.valor); }, 0) : num_(it.materialManual);
   it.total = num_(it.maoDeObra) + it.materialTotal;
+  const temCobrado = it.valorCobrado !== '' && it.valorCobrado != null;
+  it.diferenca = temCobrado ? Math.round((it.total - num_(it.valorCobrado)) * 100) / 100 : 0;
 }
 
 function rowToItem_(row) {
@@ -426,7 +439,8 @@ function rowToItem_(row) {
     it[h] = v;
   });
   it.fotos = it.fotos || []; it.audios = it.audios || []; it.materiais = it.materiais || []; it.avisos = it.avisos || {};
-  ['numero', 'maoDeObra', 'materialManual', 'materialTotal', 'total'].forEach(function (k) { it[k] = num_(it[k]); });
+  ['numero', 'maoDeObra', 'materialManual', 'materialTotal', 'total', 'diferenca'].forEach(function (k) { it[k] = num_(it[k]); });
+  it.valorCobrado = (it.valorCobrado === '' || it.valorCobrado == null) ? '' : num_(it.valorCobrado);
   it.tituloAuto = it.tituloAuto === true || String(it.tituloAuto).toLowerCase() === 'true';
   it.id = String(it.id || '');
   return it;
