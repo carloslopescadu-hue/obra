@@ -594,7 +594,7 @@ function photoSrc(f) { return f.url || ('https://drive.google.com/thumbnail?id='
 
 function applyConfig(d) {
   state.hasClaude = !!d.hasClaude; state.hasTranscription = !!d.hasTranscription; state.autoSuggest = d.autoSuggest !== false;
-  if (d.dono) CONFIG.DONO = d.dono; if (d.prestador) CONFIG.PRESTADOR = d.prestador;
+  // Os botões mostram os papéis (Proprietário/Prestador); os nomes do servidor ficam só para os e-mails.
 }
 function actor() { return eu() || LS.get('obra.who') || CONFIG.PRESTADOR; }
 function load() {
