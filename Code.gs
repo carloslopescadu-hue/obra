@@ -250,7 +250,7 @@ function testarTranscricao() {
 
 function suggest_(id) {
   const key = prop_('ANTHROPIC_API_KEY');
-  if (!key) throw new Error('A chave da API do Claude ainda não foi configurada.');
+  if (!key) throw new Error('A chave de IA ainda não foi configurada.');
   const r = findRow_(id);
   if (!r) throw new Error('Serviço não encontrado.');
   const it = r.item;
@@ -362,19 +362,19 @@ function enviarAvisos(soId) {
 }
 
 function avisoNovo_(it) {
-  const doDono = it.criadoPor === nomeDono_();
+  const doDono = ehDono_(it.criadoPor);
   const para = doDono ? emailPrestador_() : emailDono_();
   const quem = it.criadoPor || 'Alguém';
   sendMail_(para, 'Novo serviço: ' + osNum_(it) + ' · ' + it.titulo,
     quem + ' cadastrou um serviço novo na obra.',
-    it, doDono ? 'Abra para ver a sugestão do Claude e preencher mão de obra, materiais e datas.' : 'Abra para ver e aprovar quando o orçamento estiver pronto.');
+    it, doDono ? 'Abra para ver a sugestão de solução e preencher mão de obra, materiais e datas.' : 'Abra para ver e aprovar quando o orçamento estiver pronto.');
 }
 function avisoOrcamento_(it) {
   sendMail_(emailDono_(), 'Orçamento atualizado: ' + osNum_(it) + ' · ' + it.titulo,
     nomePrestador_() + ' preencheu ou alterou o orçamento.', it, 'Abra para conferir e aprovar.');
 }
 function avisoStatus_(it, por) {
-  const para = por === nomePrestador_() ? emailDono_() : emailPrestador_();
+  const para = ehPrestador_(por) ? emailDono_() : emailPrestador_();
   sendMail_(para, STATUS_LABEL[it.status] + ': ' + osNum_(it) + ' · ' + it.titulo,
     (por || nomeDono_()) + ' marcou este serviço como "' + STATUS_LABEL[it.status] + '".', it,
     it.status === 'aprovado' ? 'Pode programar a execução nas datas combinadas.' : 'Abra para ver os detalhes.');
@@ -594,6 +594,9 @@ function withLock_(fn) {
 function prop_(k) { return PropertiesService.getScriptProperties().getProperty(k); }
 function nomeDono_() { return prop_('NOME_DONO') || 'Carlos'; }
 function nomePrestador_() { return prop_('NOME_PRESTADOR') || 'Júlio'; }
+// A página usa os papéis "Proprietário" / "Prestador"; nomes antigos continuam valendo.
+function ehDono_(n) { return n === nomeDono_() || n === 'Proprietário'; }
+function ehPrestador_(n) { return n === nomePrestador_() || n === 'Prestador'; }
 function emailDono_() { return prop_('EMAIL_DONO'); }
 function emailPrestador_() { return prop_('EMAIL_PRESTADOR'); }
 function osNum_(it) { return 'OS ' + ('00' + it.numero).slice(-3); }

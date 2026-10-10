@@ -488,13 +488,16 @@ main.wrap { padding-block: 0 56px; }
 var CONFIG = {
   API_URL: 'https://script.google.com/macros/s/AKfycbySWDJia1yRr4kv_rFUPhL60ySVGR5bnZq9-ETGt0DESjmqAZdib8nGyTTzI2F3t5-a/exec',          // só se a página for hospedada fora do Apps Script: URL /exec da implantação
   PROJETO: 'Obra da Casa',
-  DONO: 'Carlos',
-  PRESTADOR: 'Júlio',
+  DONO: 'Proprietário',
+  PRESTADOR: 'Prestador',
   MAX_AUDIO_SEG: 60
 };
 
 /* ===================== Utilidades ===================== */
 var $ = function (s, r) { return (r || document).querySelector(s); };
+/* Nomes antigos gravados antes da troca para papéis */
+var PAPEL_ANTIGO = { 'Carlos': 'Proprietário', 'Júlio': 'Prestador', 'Julio': 'Prestador' };
+function papel(n) { return PAPEL_ANTIGO[n] || n || ''; }
 var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
 var LS = {
   get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
@@ -676,7 +679,7 @@ function ultimoStatus(it) {
 function quemAprovou(it) {
   var e = ultimoStatus(it);
   if (!e || e.para !== it.status || it.status === 'aguardando') return '';
-  return '<span class="by s-' + it.status + '-txt">' + (it.status === 'aprovado' ? 'Aprovado' : 'Não aprovado') + ' por <b>' + esc(e.por) + '</b> · ' + quando(e.em) + '</span>';
+  return '<span class="by s-' + it.status + '-txt">' + (it.status === 'aprovado' ? 'Aprovado' : 'Não aprovado') + ' por <b>' + esc(papel(e.por)) + '</b> · ' + quando(e.em) + '</span>';
 }
 
 function materialCell(it, inDrawer) {
@@ -853,7 +856,7 @@ function drawerHTML(it) {
 
   /* Problema */
   h += '<section class="sec"><input class="title-in" id="d-titulo" data-id="' + it.id + '" data-f="titulo" value="' + esc(it.tituloAuto && busy ? '' : it.titulo) + '" placeholder="Criando o título…" aria-label="Título do serviço">' +
-    '<div class="meta-line">Cadastrado' + (it.criadoPor ? ' por ' + esc(it.criadoPor) : '') + ' em ' + new Date(it.criadoEm).toLocaleDateString('pt-BR') + '</div>' +
+    '<div class="meta-line">Cadastrado' + (it.criadoPor ? ' por ' + esc(papel(it.criadoPor)) : '') + ' em ' + new Date(it.criadoEm).toLocaleDateString('pt-BR') + '</div>' +
     '<textarea class="in" id="d-desc" data-id="' + it.id + '" data-f="descricao" placeholder="Descrição do problema">' + esc(it.descricao) + '</textarea>' +
     mediaHTML('drawer', it.fotos, it.audios, it.id) + '</section>';
 
@@ -926,7 +929,7 @@ function drawerHTML(it) {
 function histLinha(e) {
   var txt = e.tipo === 'criado' ? 'Cadastrado' : (ACAO[e.para] || e.para);
   var cls = e.tipo === 'criado' ? 'h-new' : 'h-' + e.para;
-  return '<span class="hdot ' + cls + '"></span><span class="htxt"><b>' + esc(txt) + '</b>' + (e.por ? ' por ' + esc(e.por) : '') + '</span><span class="hwhen">' + quando(e.em) + '</span>';
+  return '<span class="hdot ' + cls + '"></span><span class="htxt"><b>' + esc(txt) + '</b>' + (e.por ? ' por ' + esc(papel(e.por)) : '') + '</span><span class="hwhen">' + quando(e.em) + '</span>';
 }
 
 function updateCalcs() {
@@ -1044,7 +1047,12 @@ function requestSuggestion(id) {
     .catch(function (e) { delete state.sugBusy[id]; state.sugErr[id] = e.message; var it = itemById(id); if (it) it.sugestaoStatus = 'erro'; render(); });
 }
 
-function newDraft() { return { titulo: '', descricao: '', fotos: [], audios: [], criadoPor: eu() || LS.get('obra.who') || CONFIG.DONO, saving: false }; }
+function papelInicial() {
+  var ok = [CONFIG.DONO, CONFIG.PRESTADOR];
+  var a = papel(LS.get('obra.who')), b = papel(eu());
+  return ok.indexOf(a) >= 0 ? a : ok.indexOf(b) >= 0 ? b : CONFIG.DONO;
+}
+function newDraft() { return { titulo: '', descricao: '', fotos: [], audios: [], criadoPor: papelInicial(), saving: false }; }
 function readDraftInputs() {
   if (!state.draft) return;
   var t = $('#n-titulo'), d = $('#n-desc');
@@ -1333,7 +1341,7 @@ var Demo = (function () {
       {
         id: 'ex2', numero: 2, criadoEm: addDays(t, -5).toISOString(), criadoPor: 'Carlos', titulo: 'Trocar tomadas e interruptores da cozinha',
         descricao: 'Seis tomadas amareladas, duas com mau contato. Aproveitar para trocar para o padrão de 20 A perto da bancada.',
-        maoDeObra: 450, materialManual: 380, valorCobrado: 600, inicio: d(-1), termino: d(1), status: 'aprovado', observacoes: 'Júlio vem às 8h. Deixar a cozinha livre.',
+        maoDeObra: 450, materialManual: 380, valorCobrado: 600, inicio: d(-1), termino: d(1), status: 'aprovado', observacoes: 'O prestador vem às 8h. Deixar a cozinha livre.',
         fotos: [], audios: [], sugestao: null, sugestaoStatus: '', materiais: []
       },
       {
@@ -1385,7 +1393,7 @@ var Demo = (function () {
           { titulo: 'Avaliar no local', detalhe: 'Conferir o problema, medir a área e confirmar a causa.' },
           { titulo: 'Preparar e proteger', detalhe: 'Isolar a área, proteger piso e móveis e separar ferramentas.' },
           { titulo: 'Executar o serviço', detalhe: 'Os passos detalhados aparecem aqui, na ordem de execução.' },
-          { titulo: 'Limpar e entregar', detalhe: 'Retirar entulho, limpar e mostrar o resultado ao Carlos.' }
+          { titulo: 'Limpar e entregar', detalhe: 'Retirar entulho, limpar e mostrar o resultado ao proprietário.' }
         ],
         cuidados: ['Os cuidados de segurança e as normas aplicáveis aparecem aqui.'], prazoDias: 3
       };
