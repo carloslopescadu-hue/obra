@@ -198,7 +198,7 @@ function suggest_(id) {
     const res = UrlFetchApp.fetch('https://api.anthropic.com/v1/messages', {
       method: 'post', contentType: 'application/json', muteHttpExceptions: true,
       headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01' },
-      payload: JSON.stringify({ model: prop_('CLAUDE_MODEL') || 'claude-sonnet-5-5', max_tokens: 3500, messages: [{ role: 'user', content: content }] })
+      payload: JSON.stringify({ model: prop_('CLAUDE_MODEL') || 'claude-sonnet-5-5', max_tokens: 1500, messages: [{ role: 'user', content: content }] })
     });
     const body = JSON.parse(res.getContentText());
     if (res.getResponseCode() !== 200) throw new Error((body.error && body.error.message) || ('HTTP ' + res.getResponseCode()));
@@ -212,19 +212,19 @@ function suggest_(id) {
     if (x.tituloAuto && clean_(s.titulo, 140)) { x.titulo = clean_(s.titulo, 140); x.tituloAuto = false; }
     if (!x.descricao && clean_(s.descricao, 4000)) x.descricao = clean_(s.descricao, 4000);
     x.sugestao = {
-      diagnostico: clean_(s.diagnostico, 2000),
-      passos: (s.passos || []).slice(0, 14).map(function (p) { return { titulo: clean_(p.titulo, 120), detalhe: clean_(p.detalhe, 800) }; }),
-      cuidados: (s.cuidados || []).slice(0, 8).map(function (c) { return clean_(c, 400); }),
+      diagnostico: clean_(s.diagnostico, 400),
+      passos: (s.passos || []).slice(0, 7).map(function (p) { return { titulo: clean_(p.titulo, 60), detalhe: clean_(p.detalhe, 220) }; }),
+      cuidados: (s.cuidados || []).slice(0, 3).map(function (c) { return clean_(c, 160); }),
       prazoDias: num_(s.prazoDias),
       geradoEm: new Date().toISOString()
     };
     x.sugestaoStatus = 'ok';
     const keep = x.materiais.filter(function (m) { return !m.sugerido || m.usar || num_(m.valor) > 0; });
     const names = keep.map(function (m) { return String(m.nome).toLowerCase(); });
-    (s.materiais || []).slice(0, 25).forEach(function (m) {
+    (s.materiais || []).slice(0, 12).forEach(function (m) {
       const nome = clean_(m.nome, 120);
       if (!nome || names.indexOf(nome.toLowerCase()) !== -1) return;
-      keep.push({ id: Utilities.getUuid().slice(0, 6), nome: nome, qtd: clean_(m.quantidade, 60), obs: clean_(m.obs, 200), usar: false, valor: 0, sugerido: true });
+      keep.push({ id: Utilities.getUuid().slice(0, 6), nome: nome, qtd: clean_(m.quantidade, 40), obs: clean_(m.obs, 60), usar: false, valor: 0, sugerido: true });
     });
     x.materiais = keep;
   });
@@ -235,26 +235,26 @@ function suggest_(id) {
 function buildPrompt_(it, nFotos) {
   const falas = it.audios.filter(function (a) { return a.transcricao; }).map(function (a, i) { return 'ÁUDIO ' + (i + 1) + ' (transcrição automática): ' + a.transcricao; });
   return [
-    'Você é um mestre de obras brasileiro experiente (reformas, alvenaria, elétrica, hidráulica, pintura, impermeabilização).',
-    'O morador de uma casa relatou um problema. O prestador de serviços vai ler sua sugestão para orçar e executar.',
+    'Você é um mestre de obras brasileiro experiente. O morador relatou um problema na casa; o prestador vai ler sua sugestão no celular para orçar e executar.',
     '',
     'TÍTULO: ' + (it.tituloAuto ? '(ainda não definido)' : it.titulo),
     'DESCRIÇÃO ESCRITA: ' + (it.descricao || '(nenhuma)'),
     falas.length ? falas.join('\n') : 'Sem áudio.',
-    nFotos ? ('Há ' + nFotos + ' foto(s) anexada(s); use-as no diagnóstico.') : 'Sem foto.',
+    nFotos ? ('Há ' + nFotos + ' foto(s); use-as no diagnóstico.') : 'Sem foto.',
     '',
-    'Responda SOMENTE com um objeto JSON, sem texto antes ou depois, neste formato:',
-    '{"titulo": "título curto do serviço, até 60 caracteres, ex.: Infiltração na parede do quarto",',
-    ' "descricao": "o problema relatado, em 1 a 3 frases claras, na voz do morador",',
-    ' "diagnostico": "2 a 4 frases: o que provavelmente é, causas prováveis e o que verificar antes de começar",',
-    ' "passos": [{"titulo": "verbo no infinitivo, curto", "detalhe": "como fazer, em 1 a 3 frases práticas"}],',
-    ' "cuidados": ["segurança, normas (ex.: NBR 5410 em elétrica), erros comuns"],',
-    ' "prazoDias": número estimado de dias de execução, incluindo secagem ou cura,',
-    ' "materiais": [{"nome": "material com especificação usual no Brasil", "quantidade": "estimativa com unidade, ou \\"a definir\\"", "obs": "curta, opcional"}]}',
+    'Seja OBJETIVO e CURTO. Cada informação aparece uma única vez: não repita no passo o que já está no diagnóstico, nem nos cuidados o que já está nos passos.',
     '',
-    'Regras: 5 a 10 passos na ordem de execução; 2 a 5 cuidados; 4 a 15 materiais (inclua consumíveis);',
-    'não informe preços; linguagem simples de obra; português do Brasil.',
-    'A transcrição pode ter erros de reconhecimento de fala: interprete pelo contexto.'
+    'Responda SOMENTE com um objeto JSON, sem texto antes ou depois:',
+    '{"titulo": "até 50 caracteres, ex.: Infiltração na parede do quarto",',
+    ' "descricao": "o problema em 1 frase, na voz do morador",',
+    ' "diagnostico": "1 ou 2 frases curtas (máx. 220 caracteres): causa provável e o que conferir antes",',
+    ' "passos": [{"titulo": "verbo no infinitivo, até 4 palavras", "detalhe": "1 frase curta, máx. 110 caracteres"}],',
+    ' "cuidados": ["máx. 90 caracteres cada; só segurança/normas que não estejam nos passos"],',
+    ' "prazoDias": número de dias, incluindo secagem ou cura,',
+    ' "materiais": [{"nome": "nome curto e usual, sem marca", "quantidade": "estimativa simples, ex.: 1 galão 3,6 L", "obs": "opcional, até 40 caracteres"}]}',
+    '',
+    'Limites: 4 a 6 passos; 1 a 3 cuidados; 3 a 10 materiais (só o necessário). Sem preços. Português do Brasil, linguagem simples de obra.',
+    'A transcrição pode ter erros de fala: interprete pelo contexto.'
   ].join('\n');
 }
 

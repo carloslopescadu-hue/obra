@@ -78,7 +78,8 @@ svg.i { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none;
 .top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: color-mix(in srgb, var(--hero) 92%, transparent); backdrop-filter: saturate(1.4) blur(12px); -webkit-backdrop-filter: saturate(1.4) blur(12px); color: var(--hero-ink); border-bottom: 1px solid color-mix(in srgb, var(--hero-accent) 30%, transparent); }
 .top .wrap { display: flex; align-items: center; gap: 10px; padding-block: 10px; }
 .brand { display: flex; align-items: center; gap: 10px; min-width: 0; margin-right: auto; }
-.emblem { width: 34px; height: 34px; flex: none; color: var(--hero-accent); }
+.emblem { width: 38px; height: 38px; flex: none; }
+.emblem, .hero-mark, .empty svg.big, .foot svg { --emb-shield: var(--hero-accent); --emb-line: color-mix(in srgb, var(--hero-accent) 55%, #3a2a0c); --emb-ink: var(--hero); }
 .brand-txt { display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
 .brand h1 { margin: 0; font-family: var(--display); font-size: 17px; font-weight: 800; font-stretch: 118%; letter-spacing: .06em; text-transform: uppercase; line-height: 1.1; white-space: nowrap; }
 .brand span { color: var(--hero-muted); font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -102,14 +103,13 @@ svg.i { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none;
 @media (max-width: 560px) {
   .brand span { display: none; }
   .brand h1 { font-size: 15px; font-stretch: 108%; letter-spacing: .04em; }
-  .emblem { width: 30px; height: 30px; }
+  .emblem { width: 34px; height: 34px; }
   .btn-label-long, .own-txt { display: none; }
   .top .btn { padding: 8px 12px; }
 }
 
 .how { margin-top: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 12px; box-shadow: var(--shadow-sm); }
-.how-head { padding: 2px 4px 8px; }
-.how .eyebrow { color: var(--accent); }
+.how-head { margin: 0; padding: 2px 4px 10px; font-family: var(--display); font-size: 16px; font-weight: 800; }
 .how-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
 .how-steps button { width: 100%; height: 100%; display: flex; align-items: center; gap: 12px; text-align: left; border: 1px solid var(--line); background: var(--surface-2); border-radius: 12px; padding: 12px; transition: border-color .15s, background .15s; }
 .how-steps button:hover { border-color: var(--accent); background: var(--accent-soft); }
@@ -125,9 +125,9 @@ svg.i { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none;
 
 /* ---------- Painel (hero) ---------- */
 .hero { position: relative; overflow: hidden; margin-top: 18px; border-radius: 22px; background: radial-gradient(120% 140% at 100% 0%, var(--hero-2) 0%, var(--hero) 60%); color: var(--hero-ink); padding: 22px 22px 18px; box-shadow: var(--shadow); isolation: isolate; }
-.hero-mark { position: absolute; right: -36px; bottom: -48px; width: 230px; height: 230px; color: var(--hero-accent); opacity: .08; z-index: -1; pointer-events: none; }
+.hero-mark { position: absolute; right: -40px; bottom: -60px; width: 250px; height: 250px; opacity: .07; z-index: -1; pointer-events: none; }
 .hero-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-.eyebrow { font-size: 11.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--hero-accent); }
+.hero-sub { margin: 4px 0 0; color: var(--hero-muted); font-size: 14px; max-width: 48ch; }
 .hero h2 { margin: 2px 0 0; font-family: var(--display); font-weight: 800; font-stretch: 110%; font-size: clamp(22px, 4.2vw, 30px); line-height: 1.1; text-wrap: balance; }
 .hero-total { text-align: right; }
 .hero-total b { display: block; font-family: var(--display); font-size: clamp(26px, 5vw, 36px); font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1.05; }
@@ -143,10 +143,11 @@ svg.i { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none;
 @media (max-width: 560px) {
   .hero { padding: 18px 16px 14px; border-radius: 18px; }
   .hero-total { text-align: left; }
-  .summary { grid-template-columns: minmax(0, 1fr); gap: 6px; margin-top: 14px; }
-  .kpi { flex-direction: row-reverse; justify-content: space-between; align-items: center; padding: 9px 12px; border-radius: 12px; }
-  .kpi b { font-size: 15px; }
-  .kpi span { font-size: 12.5px; }
+  .hero-sub { display: none; }
+  .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
+  .kpi { padding: 9px 11px; border-radius: 12px; }
+  .kpi b { font-size: 15.5px; }
+  .kpi span { font-size: 12px; }
 }
 
 /* ---------- Abas e filtros ---------- */
@@ -206,7 +207,7 @@ svg.i { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none;
 .dif.neg { color: var(--no); }
 .fields .calc { padding: 4px 0 0; }
 .cell { min-width: 0; display: flex; flex-direction: column; gap: 5px; }
-.lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; font-weight: 700; }
+.lbl { font-size: 12.5px; color: var(--muted); font-weight: 600; }
 .in { width: 100%; min-width: 0; border: 1px solid var(--line); background: var(--surface-2); border-radius: var(--r-sm); padding: 9px 11px; font-variant-numeric: tabular-nums; transition: border-color .15s, background .15s; }
 .in:hover { border-color: color-mix(in srgb, var(--ink) 25%, var(--line)); }
 .in:focus { background: var(--surface); border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); }
@@ -219,7 +220,7 @@ svg.i { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none;
 .total { font-family: var(--display); font-weight: 800; font-size: 18px; font-variant-numeric: tabular-nums; line-height: 1.2; }
 .total.zero { color: var(--muted); font-family: var(--font); font-weight: 600; font-size: 13.5px; }
 .empty { background: var(--surface); border: 1px dashed var(--line); border-radius: var(--r); padding: 44px 20px; text-align: center; color: var(--muted); display: grid; justify-items: center; gap: 6px; }
-.empty svg.big { width: 56px; height: 56px; color: var(--accent); opacity: .8; margin-bottom: 4px; }
+.empty svg.big { width: 72px; height: 72px; margin-bottom: 6px; }
 .empty b { color: var(--ink); font-size: 17px; font-family: var(--display); }
 .empty p { margin: 0; max-width: 46ch; }
 @media (max-width: 860px) {
@@ -256,7 +257,7 @@ svg.i { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none;
 .ev.cr { margin-right: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; }
 .ev:hover { filter: brightness(.96); }
 .nodate { margin-top: 16px; }
-.nodate h3, .sec h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin: 0 0 8px; font-weight: 800; }
+.nodate h3, .sec h3 { font-family: var(--display); font-size: 16px; color: var(--ink); margin: 0 0 8px; font-weight: 800; }
 .nodate .chips { flex-wrap: wrap; }
 .nodate .chips .badge { cursor: pointer; }
 .legend { display: flex; gap: 8px; flex-wrap: wrap; padding: 10px 14px; border-top: 1px solid var(--line); }
@@ -301,7 +302,7 @@ textarea.in { resize: vertical; min-height: 80px; line-height: 1.5; }
 .recbar i { display: block; height: 100%; background: var(--rec); width: 0; }
 .note { font-size: 13px; color: var(--muted); }
 .warn { font-size: 13px; color: var(--no); }
-.sug-tag { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--accent); background: var(--accent-soft); padding: 4px 10px; border-radius: 999px; }
+.sug-tag { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 700; color: var(--accent); background: var(--accent-soft); padding: 4px 10px; border-radius: 999px; }
 .sug p { margin: 0; }
 .steps { list-style: none; margin: 0; padding: 0; display: grid; counter-reset: s; }
 .steps li { counter-increment: s; display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 2px 12px; padding: 11px 0; border-top: 1px solid var(--line); }
@@ -315,13 +316,13 @@ textarea.in { resize: vertical; min-height: 80px; line-height: 1.5; }
 .confirm { display: grid; gap: 8px; background: var(--wait-bg); color: var(--ink); border-radius: 12px; padding: 11px 13px; font-size: 14px; }
 .mats { display: grid; }
 .mat { display: grid; grid-template-columns: 28px minmax(0, 1fr) 120px 112px 34px; gap: 8px; align-items: center; padding: 9px 0; border-top: 1px solid var(--line); }
-.mat.head { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; font-weight: 700; border-top: 0; padding-top: 0; }
+.mat.head { font-size: 12.5px; color: var(--muted); font-weight: 600; border-top: 0; padding-top: 0; }
 .mat.off .mname, .mat.off .in { opacity: .55; }
 .mat input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent); margin: 0; }
 .mname { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .mname b { font-weight: 700; font-size: 14px; }
 .mname small { color: var(--muted); font-size: 12px; }
-.tag { font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line)); border-radius: 999px; padding: 0 7px; align-self: flex-start; font-weight: 700; }
+.tag { font-size: 11px; color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line)); border-radius: 999px; padding: 0 7px; align-self: flex-start; font-weight: 700; }
 .icon-btn { width: 34px; height: 34px; border-radius: 999px; border: 0; background: transparent; color: var(--muted); display: grid; place-items: center; padding: 0; }
 .icon-btn:hover { background: var(--surface-2); color: var(--no); }
 .mat-sum { display: flex; justify-content: space-between; gap: 10px; font-size: 14px; padding-top: 10px; border-top: 1px solid var(--line); }
@@ -337,11 +338,11 @@ textarea.in { resize: vertical; min-height: 80px; line-height: 1.5; }
 .field { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
 .field > span { font-size: 12.5px; color: var(--muted); font-weight: 700; }
 .bigtotal { display: flex; justify-content: space-between; align-items: baseline; background: var(--accent-soft); border-radius: 12px; padding: 12px 14px; }
-.bigtotal span { font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: .08em; font-size: 12px; }
+.bigtotal span { font-weight: 700; color: var(--accent); font-size: 14px; }
 .bigtotal b { font-family: var(--display); font-size: 26px; font-weight: 800; font-variant-numeric: tabular-nums; }
 .from-list { font-size: 12.5px; color: var(--ok); }
 .bigdif { display: flex; justify-content: space-between; align-items: baseline; background: var(--ok-bg); border-radius: 12px; padding: 12px 14px; }
-.bigdif span { font-weight: 700; color: var(--ok); text-transform: uppercase; letter-spacing: .08em; font-size: 12px; }
+.bigdif span { font-weight: 700; color: var(--ok); font-size: 14px; }
 .bigdif b { font-family: var(--display); font-size: 24px; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--ok); }
 .bigdif b.neg { color: var(--no); }
 .d-foot { position: sticky; bottom: 0; z-index: 2; display: flex; gap: 10px; padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)); background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid var(--line); }
@@ -358,24 +359,58 @@ textarea.in { resize: vertical; min-height: 80px; line-height: 1.5; }
   .modal { left: 0; right: 0; bottom: 0; top: auto; transform: none; width: 100%; border-radius: 22px 22px 0 0; max-height: 92%; padding-bottom: env(safe-area-inset-bottom, 0px); }
   .m-foot .btn { flex: 1; }
 }
+.capture { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.cap { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 120px; border: 1.5px dashed color-mix(in srgb, var(--accent) 45%, var(--line)); background: var(--accent-soft); color: var(--ink); border-radius: 16px; padding: 14px 10px; text-align: center; transition: border-color .15s, transform .1s; }
+.cap:active { transform: scale(.98); }
+.cap:hover { border-color: var(--accent); }
+.cap svg.i { width: 30px; height: 30px; color: var(--accent); }
+.cap b { font-size: 16px; }
+.cap small { color: var(--muted); font-size: 12.5px; }
+.cap-n { position: absolute; top: 10px; left: 10px; width: 22px; height: 22px; border-radius: 50%; background: var(--primary); color: var(--primary-ink); display: grid; place-items: center; font-size: 12px; font-weight: 800; }
+.cap-mic { background: var(--primary); color: var(--primary-ink); border: 0; }
+.cap-mic svg.i { color: var(--hero-accent); }
+.cap-mic small { color: color-mix(in srgb, var(--primary-ink) 70%, transparent); }
+.cap-mic .cap-n { background: var(--hero-accent); color: #16130D; }
 .pin-in { font-size: 26px; letter-spacing: .4em; text-align: center; font-variant-numeric: tabular-nums; }
 .lightbox { position: fixed; inset: 0; z-index: 60; background: rgb(0 0 0 / .9); display: grid; place-items: center; padding: 16px; }
 .lightbox img { max-width: 100%; max-height: 100%; border-radius: 10px; }
 .toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--hero); color: var(--hero-ink); padding: 11px 18px; border-radius: 999px; font-size: 14px; font-weight: 600; z-index: 70; max-width: calc(100% - 32px); box-shadow: var(--shadow-lg); }
 main.wrap { padding-block: 0 56px; }
+.fab { display: none; }
+@media (max-width: 860px) {
+  .in, textarea.in, .title-in { font-size: 16px; }
+  .in { min-height: 44px; }
+  .seg button { min-height: 40px; padding: 8px 12px; }
+  .chip { min-height: 36px; }
+  .btn.small { min-height: 38px; }
+  .icon-btn { width: 40px; height: 40px; }
+  .mat input[type="checkbox"] { width: 24px; height: 24px; }
+}
+@media (max-width: 560px) {
+  .top .btn.bronze { display: none; }
+  .fab { display: inline-flex; position: fixed; z-index: 30; left: 50%; transform: translateX(-50%); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); align-items: center; gap: 8px; border: 0; border-radius: 999px; padding: 15px 24px; background: var(--hero-accent); color: #16130D; font-weight: 800; font-size: 16px; box-shadow: 0 10px 30px rgb(10 14 22 / .35); white-space: nowrap; }
+  .fab svg.i { width: 20px; height: 20px; }
+  main.wrap { padding-block: 0 110px; }
+  .toast { bottom: calc(86px + env(safe-area-inset-bottom, 0px)); }
+}
 .foot { text-align: center; color: var(--muted); font-size: 12px; margin-top: 28px; display: flex; align-items: center; justify-content: center; gap: 8px; }
-.foot svg { width: 16px; height: 16px; color: var(--accent); }
+.foot svg { width: 20px; height: 20px; }
 </style>
 </head>
 <body>
 
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <symbol id="elmo" viewBox="0 0 48 48">
-    <path d="M24 3.5 40.5 9.2V22c0 10.4-7 18.2-16.5 22.5C14.5 40.2 7.5 32.4 7.5 22V9.2Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>
-    <path d="M16.5 17.5c1.6-5.6 13.4-5.6 15 0" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-    <path d="M15.5 33.5V25c0-5.2 3.8-8.8 8.5-8.8s8.5 3.6 8.5 8.8v8.5l-4.2 2.6v-8.6h-2.6v8.8h-3.4v-8.8h-2.6v8.6Z" fill="currentColor" fill-opacity=".14" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-    <path d="M18.6 25.2h10.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  <symbol id="elmo" viewBox="0 0 64 64">
+    <circle cx="32" cy="32" r="30" fill="var(--emb-shield, #C9973F)"/>
+    <circle cx="32" cy="32" r="26" fill="none" stroke="var(--emb-line, #8A6420)" stroke-width="1.5"/>
+    <g transform="translate(-3.6 1.2)">
+      <path d="M16.6 24.2C19 12.4 27.8 6.2 37.6 6.6c10 .5 18.1 8 19.6 23.6l-4.2.5c-1.3-10.6-7.3-16.8-15.8-17.3-7.6-.4-13.5 3.3-15.9 10.9Z" fill="var(--emb-ink, #151B27)"/>
+      <path d="M19.4 22.6C22 14.6 29 9.9 37.6 10.1c8.9.3 15.3 6.7 17.1 19.9" fill="none" stroke="var(--emb-shield, #C9973F)" stroke-width="1.1" stroke-linecap="round" stroke-dasharray="2.4 2.2" opacity=".55"/>
+      <path d="M32.4 13.6h3.8l-.5 5.4h-2.8Z" fill="var(--emb-ink, #151B27)"/>
+      <path fill-rule="evenodd" fill="var(--emb-ink, #151B27)" d="M19.5 30.2c0-6.9 6.1-11.3 13.4-11.3 8.5 0 14.4 6 14.4 14.3v14.2c0 1.6 1.3 2.9 3 3.4-2.4 2.1-5.8 2.6-8.7 1.2l-5.4-3c-2.6 2.6-6.4 3.9-10.1 3.2l-3.7-4.1c-1.6-6.1-2.9-12-2.9-17.9ZM21.4 32c3.7-1.7 8.6-1.8 12.2.1-3.2 1.9-8.5 2-12.2-.1ZM24.3 35.2l1.6 12.2 2.9-.4-1.4-11.8Z"/>
+      <path d="M20.7 28c4.4-3.4 13.6-3.9 20.3-.6" fill="none" stroke="var(--emb-shield, #C9973F)" stroke-width="1.4" stroke-linecap="round" opacity=".75"/>
+    </g>
   </symbol>
 </svg>
 <header class="top">
@@ -392,17 +427,17 @@ main.wrap { padding-block: 0 56px; }
   <section class="hero" aria-label="Resumo da obra">
     <svg class="hero-mark" aria-hidden="true"><use href="#elmo"/></svg>
     <div class="hero-head">
-      <div><div class="eyebrow">Frente de obra</div><h2 id="heroTitle">Serviços da casa</h2></div>
+      <div><h2 id="heroTitle">Serviços da casa</h2><p class="hero-sub">Tudo o que precisa ser feito na obra, com valores e datas.</p></div>
       <div class="hero-total"><b id="heroTotal" class="num">R$ 0,00</b><span>valor dos serviços em aberto</span></div>
     </div>
     <div class="summary" id="summary"></div>
   </section>
   <section class="how" aria-label="Como funciona">
-    <div class="how-head"><span class="eyebrow">Como funciona</span></div>
+    <h3 class="how-head">Como funciona</h3>
     <ol class="how-steps">
       <li><button data-act="new"><span class="how-n">1</span><span class="how-ic"><svg class="i" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span><span class="how-t"><b>Tire a foto</b><small>do problema na casa</small></span></button></li>
       <li><button data-act="new"><span class="how-n">2</span><span class="how-ic"><svg class="i" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v1a7 7 0 0 0 14 0v-1M12 18v4M8 22h8"/></svg></span><span class="how-t"><b>Grave um áudio</b><small>de até 1 minuto explicando o problema</small></span></button></li>
-      <li><button data-act="new"><span class="how-n">3</span><span class="how-ic"><svg class="i" viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></span><span class="how-t"><b>Envie</b><small>o Claude sugere a solução e o prestador orça</small></span></button></li>
+      <li><button data-act="new"><span class="how-n">3</span><span class="how-ic"><svg class="i" viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></span><span class="how-t"><b>Envie</b><small>nós sugerimos a solução e o prestador faz o orçamento</small></span></button></li>
     </ol>
   </section>
   <div class="bar">
@@ -416,6 +451,7 @@ main.wrap { padding-block: 0 56px; }
   <div class="foot"><svg aria-hidden="true"><use href="#elmo"/></svg>Obra da Casa</div>
 </main>
 
+<button class="fab" data-act="new"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Novo serviço</button>
 <div id="layer"></div>
 <input type="file" id="photoPick" accept="image/*" multiple hidden>
 <input type="file" id="audioPick" accept="audio/*" hidden>
@@ -610,7 +646,7 @@ function materialCell(it, inDrawer) {
 function listHTML() {
   if (!state.loaded) return '<div class="empty"><span class="spin"></span>Carregando serviços…</div>';
   var items = state.items.filter(function (it) { return state.filter === 'todos' || it.status === state.filter; });
-  if (!state.items.length) return '<div class="empty"><svg class="big" aria-hidden="true"><use href="#elmo"/></svg><b>Nenhum serviço cadastrado</b><p>Toque em <strong>Novo serviço</strong>, grave um áudio contando o problema e tire uma foto. O Claude sugere como resolver e o ' + esc(CONFIG.PRESTADOR) + ' preenche os valores.</p></div>';
+  if (!state.items.length) return '<div class="empty"><svg class="big" aria-hidden="true"><use href="#elmo"/></svg><b>Nenhum serviço cadastrado</b><p>Toque em <strong>Novo serviço</strong>, grave um áudio contando o problema e tire uma foto. Nós sugerimos a solução e o prestador faz o orçamento.</p></div>';
   if (!items.length) return '<div class="empty"><b>Nada por aqui</b><p>Nenhum serviço com este status.</p></div>';
   return '<div class="list">' + items.map(function (it) {
     var thumb = it.fotos.length ? '<img src="' + esc(photoSrc(it.fotos[0])) + '" alt="" loading="lazy">' : ICON.img;
@@ -618,7 +654,7 @@ function listHTML() {
     if (it.fotos.length) flags.push('<span>' + ICON.cam + it.fotos.length + '</span>');
     if (it.audios.length) flags.push('<span>' + ICON.mic + it.audios.length + '</span>');
     if (it.sugestao) flags.push('<span class="ready">' + ICON.spark + 'Sugestão pronta</span>');
-    else if (it.sugestaoStatus === 'gerando' || state.sugBusy[it.id]) flags.push('<span>' + ICON.spark + 'Claude escrevendo…</span>');
+    else if (it.sugestaoStatus === 'gerando' || state.sugBusy[it.id]) flags.push('<span>' + ICON.spark + 'Preparando sugestão…</span>');
     return '<article class="card" data-row="' + it.id + '">' +
       '<div class="card-top">' +
         '<button class="svc" data-open="' + it.id + '"><span class="thumb">' + thumb + '</span><span class="os">' + osNum(it.numero) + '</span><span class="ttl">' + esc(it.titulo) + '</span>' +
@@ -715,6 +751,13 @@ function mediaHTML(target, fotos, audios, itemId) {
     h += '<div class="recbox"><span class="recdot"></span><span class="num" id="recTime">0:00</span><span class="recbar"><i id="recBar"></i></span><span class="note num">1:00</span>' +
       '<button class="btn small rec-on" data-act="rec-stop">' + ICON.stop + 'Parar</button></div>';
   }
+  if (target === 'new') {
+    h += '<div class="capture">' +
+      '<button class="cap" data-act="add-photo" data-target="new"><span class="cap-n">1</span>' + ICON.cam + '<b>' + (fotos.length ? 'Mais uma foto' : 'Tirar foto') + '</b><small>' + (fotos.length ? fotos.length + (fotos.length === 1 ? ' foto' : ' fotos') : 'do problema') + '</small></button>' +
+      (state.rec ? '' : '<button class="cap cap-mic" data-act="rec" data-target="new"><span class="cap-n">2</span>' + ICON.mic + '<b>' + (audios.length ? 'Gravar outro' : 'Gravar áudio') + '</b><small>até 1 minuto</small></button>') +
+      '</div>';
+    return h;
+  }
   h += '<div class="actions">' +
     (state.rec ? '' : '<button class="btn mic" data-act="rec" data-target="' + target + '">' + ICON.mic + 'Gravar áudio</button>') +
     '<button class="btn" data-act="add-photo" data-target="' + target + '">' + ICON.cam + 'Adicionar foto</button></div>' +
@@ -726,14 +769,14 @@ function newHTML() {
   var d = state.draft;
   return '<div class="m-head"><h2>Novo serviço</h2><button class="icon-btn" data-act="close-modal" aria-label="Fechar">' + ICON.x + '</button></div>' +
     '<div class="m-body">' +
-      '<div class="field"><span>Mostre e conte o problema</span>' + mediaHTML('new', d.fotos, d.audios) + '</div>' +
-      '<label class="field"><span>Título <small style="font-weight:400">(opcional)</small></span><input class="in" id="n-titulo" placeholder="' + (state.hasClaude ? 'Se deixar vazio, o Claude cria a partir do áudio' : 'Ex.: Infiltração na parede do quarto') + '" value="' + esc(d.titulo) + '" maxlength="140"></label>' +
+      '<div class="field">' + mediaHTML('new', d.fotos, d.audios) + '</div>' +
+      '<label class="field"><span>Título <small style="font-weight:400">(opcional)</small></span><input class="in" id="n-titulo" placeholder="' + (state.hasClaude ? 'Se deixar vazio, criamos a partir do áudio' : 'Ex.: Infiltração na parede do quarto') + '" value="' + esc(d.titulo) + '" maxlength="140"></label>' +
       '<label class="field"><span>Descrição <small style="font-weight:400">(opcional se gravar áudio)</small></span><textarea class="in" id="n-desc" placeholder="Onde fica, desde quando, o que você já percebeu…">' + esc(d.descricao) + '</textarea></label>' +
       '<div class="field"><span>Quem está cadastrando</span><div class="seg" role="group">' + [CONFIG.DONO, CONFIG.PRESTADOR].map(function (p) {
         return '<button class="' + (d.criadoPor === p ? 'on s-aprovado' : '') + '" data-act="who" data-who="' + esc(p) + '" aria-pressed="' + (d.criadoPor === p) + '">' + esc(p) + '</button>';
       }).join('') + '</div></div>' +
       (d.step ? '<div class="progress"><span class="spin"></span>' + esc(d.step) + '</div>'
-        : state.hasClaude && state.autoSuggest ? '<p class="note" style="margin:0">Ao salvar, o áudio é transcrito e o Claude escreve como resolver e quais materiais usar.</p>' : '') +
+        : state.hasClaude && state.autoSuggest ? '<p class="note" style="margin:0">Ao enviar, sugerimos como resolver e quais materiais usar.</p>' : '') +
     '</div>' +
     '<div class="m-foot"><button class="btn ghost" data-act="close-modal">Cancelar</button><button class="btn primary" data-act="create"' + (d.saving ? ' disabled' : '') + '>' + (d.saving ? 'Enviando…' : 'Enviar') + '</button></div>';
 }
@@ -752,27 +795,27 @@ function drawerHTML(it) {
     '<button class="icon-btn" data-act="close" aria-label="Fechar">' + ICON.x + '</button></div><div class="d-body">';
 
   /* Problema */
-  h += '<section class="sec"><input class="title-in" id="d-titulo" data-id="' + it.id + '" data-f="titulo" value="' + esc(it.tituloAuto && busy ? '' : it.titulo) + '" placeholder="O Claude está criando o título…" aria-label="Título do serviço">' +
+  h += '<section class="sec"><input class="title-in" id="d-titulo" data-id="' + it.id + '" data-f="titulo" value="' + esc(it.tituloAuto && busy ? '' : it.titulo) + '" placeholder="Criando o título…" aria-label="Título do serviço">' +
     '<div class="meta-line">Cadastrado' + (it.criadoPor ? ' por ' + esc(it.criadoPor) : '') + ' em ' + new Date(it.criadoEm).toLocaleDateString('pt-BR') + '</div>' +
     '<textarea class="in" id="d-desc" data-id="' + it.id + '" data-f="descricao" placeholder="Descrição do problema">' + esc(it.descricao) + '</textarea>' +
     mediaHTML('drawer', it.fotos, it.audios, it.id) + '</section>';
 
   /* Sugestão */
-  h += '<section class="sec sug"><div class="sec-title"><h3>Como resolver</h3><span class="sug-tag">' + ICON.spark + 'Sugestão do Claude</span></div>';
-  if (busy) h += '<div class="prazo"><span class="spin"></span>O Claude está analisando ' + [it.audios.length ? 'o áudio' : '', it.fotos.length ? 'as fotos' : '', it.descricao ? 'a descrição' : ''].filter(Boolean).join(', ').replace(/, ([^,]*)$/, ' e $1') + '…</div>';
+  h += '<section class="sec sug"><div class="sec-title"><h3>Como resolver</h3><span class="sug-tag">' + ICON.spark + 'Sugestão</span></div>';
+  if (busy) h += '<div class="prazo"><span class="spin"></span>Analisando ' + [it.audios.length ? 'o áudio' : '', it.fotos.length ? 'as fotos' : '', it.descricao ? 'a descrição' : ''].filter(Boolean).join(', ').replace(/, ([^,]*)$/, ' e $1') + '…</div>';
   else if (it.sugestao) {
     var s = it.sugestao;
-    h += (s.demo ? '<p class="note">Sugestão simulada para a prévia. Na versão real o Claude escreve a partir da descrição e das fotos.</p>' : '') +
+    h += (s.demo ? '<p class="note">Sugestão simulada para a prévia. Na versão real, a sugestão é feita a partir do áudio, da descrição e das fotos.</p>' : '') +
       '<p>' + esc(s.diagnostico) + '</p><ol class="steps">' + (s.passos || []).map(function (p) { return '<li><b>' + esc(p.titulo) + '</b><span>' + esc(p.detalhe) + '</span></li>'; }).join('') + '</ol>' +
-      (s.cuidados && s.cuidados.length ? '<div><h3 style="font-size:13px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:4px 0 6px">Cuidados</h3><ul class="cares">' + s.cuidados.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('') + '</ul></div>' : '') +
+      (s.cuidados && s.cuidados.length ? '<div><h3 style="margin:4px 0 6px">Cuidados</h3><ul class="cares">' + s.cuidados.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('') + '</ul></div>' : '') +
       (s.prazoDias ? '<div class="prazo"><span>Prazo estimado: <b class="num">' + s.prazoDias + (s.prazoDias === 1 ? ' dia' : ' dias') + '</b></span>' + (it.inicio ? '<button class="btn small" data-act="use-prazo">Ajustar término (' + dm(iso(addDays(pd(it.inicio), s.prazoDias - 1))) + ')</button>' : '<span class="note">Defina o início para calcular o término.</span>') + '</div>' : '') +
       '<p class="note" style="margin:0">É uma orientação inicial. O ' + esc(CONFIG.PRESTADOR) + ' confirma no local antes de executar.</p>';
   } else if (state.sugErr[it.id] || it.sugestaoStatus === 'erro') h += '<p class="warn" style="margin:0">' + esc(state.sugErr[it.id] || 'A última tentativa falhou.') + '</p>';
-  else h += '<p class="note" style="margin:0">' + (state.hasClaude ? 'Ainda sem sugestão para este serviço.' : 'Configure a chave da API do Claude para receber sugestões automáticas.') + '</p>';
+  else h += '<p class="note" style="margin:0">' + (state.hasClaude ? 'Ainda sem sugestão para este serviço.' : 'Sugestões automáticas desativadas.') + '</p>';
   if (state.hasClaude && !busy) {
-    if (state.confirmSug) h += '<div class="confirm">Isso usa a API do Claude (alguns centavos por sugestão). ' + (it.sugestao ? 'A sugestão atual será substituída; materiais já marcados ficam.' : '') +
+    if (state.confirmSug) h += '<div class="confirm">Gera uma nova sugestão (custo de alguns centavos). ' + (it.sugestao ? 'A sugestão atual será substituída; materiais já marcados ficam.' : '') +
       '<div class="actions"><button class="btn small primary" data-act="sug-go">Gerar agora</button><button class="btn small" data-act="sug-cancel">Cancelar</button></div></div>';
-    else h += '<div class="actions"><button class="btn" data-act="sug-ask">' + ICON.spark + (it.sugestao ? 'Refazer sugestão' : 'Pedir sugestão ao Claude') + '</button></div>';
+    else h += '<div class="actions"><button class="btn" data-act="sug-ask">' + ICON.spark + (it.sugestao ? 'Refazer sugestão' : 'Gerar sugestão') + '</button></div>';
   }
   h += '</section>';
 
@@ -1063,7 +1106,7 @@ document.addEventListener('click', function (e) {
     case 'filter': state.filter = b.getAttribute('data-filter'); render(); break;
     case 'close': case 'back': if (state.rec) stopRecording(); flushAll(); state.openId = null; render(); break;
     case 'save-close': saveAndClose(); break;
-    case 'new': state.draft = newDraft(); state.modal = 'new'; renderLayer(); setTimeout(function () { var t = $('#n-titulo'); if (t) t.focus(); }, 30); break;
+    case 'new': state.draft = newDraft(); state.modal = 'new'; renderLayer(); if (window.matchMedia && matchMedia('(hover: hover) and (pointer: fine)').matches) setTimeout(function () { var t = $('#n-titulo'); if (t) t.focus(); }, 30); break;
     case 'close-modal': if (state.rec) { state.rec.rec.onstop = null; state.rec.stream.getTracks().forEach(function (t) { t.stop(); }); clearInterval(state.rec.timer); state.rec = null; } state.modal = null; state.draft = null; renderLayer(); break;
     case 'who': readDraftInputs(); state.draft.criadoPor = b.getAttribute('data-who'); renderLayer(); break;
     case 'create': createService(); break;
@@ -1191,18 +1234,15 @@ var Demo = (function () {
         maoDeObra: 1200, materialManual: 0, valorCobrado: 1000, inicio: d(4), termino: d(13), status: 'aguardando', observacoes: '',
         fotos: [{ id: 'f1', url: wall(), nome: 'parede.jpg' }], audios: [], sugestaoStatus: 'ok',
         sugestao: {
-          diagnostico: 'A mancha começando no rodapé, com tinta estufada, indica água entrando na parede. Como ela faz divisa com o banheiro e piora com chuva, as causas mais prováveis são vazamento em tubulação embutida, falha no rejunte ou na impermeabilização do box, ou umidade subindo do piso. Antes de mexer no acabamento, é preciso confirmar a origem — se não, a mancha volta.',
+          diagnostico: 'Água entrando pela parede que faz divisa com o banheiro. Antes de mexer no acabamento, confirmar se vem da tubulação, do box ou do piso.',
           passos: [
-            { titulo: 'Localizar a origem', detalhe: 'Fechar todos os registros e observar o hidrômetro por 30 minutos. Se girar, há vazamento. Conferir rejunte e ralo do box do banheiro e o lado externo da parede.' },
-            { titulo: 'Corrigir a causa', detalhe: 'Tubulação: abrir e trocar o trecho ou a conexão. Box: refazer rejunte com rejunte epóxi. Piso: aplicar bloqueador de umidade no rodapé.' },
-            { titulo: 'Remover o acabamento danificado', detalhe: 'Raspar tinta solta, massa e reboco esfarelado até chegar à base firme, uns 30 cm além da mancha.' },
-            { titulo: 'Deixar secar', detalhe: 'Esperar a parede secar por completo, em geral 7 a 10 dias, com o cômodo ventilado. Não fechar a parede úmida.' },
-            { titulo: 'Impermeabilizar', detalhe: 'Aplicar 3 demãos cruzadas de argamassa polimérica na área, respeitando o intervalo entre demãos indicado na embalagem.' },
-            { titulo: 'Regularizar', detalhe: 'Recompor o reboco onde precisar e aplicar massa acrílica, própria para áreas sujeitas a umidade.' },
-            { titulo: 'Lixar e selar', detalhe: 'Lixar, tirar o pó e aplicar fundo preparador de paredes.' },
-            { titulo: 'Pintar', detalhe: 'Duas demãos de tinta acrílica premium com antimofo, pintando a parede inteira para não marcar emenda.' }
+            { titulo: 'Achar a origem', detalhe: 'Fechar os registros e ver se o hidrômetro gira; checar rejunte e ralo do box.' },
+            { titulo: 'Corrigir o vazamento', detalhe: 'Trocar o trecho de cano ou refazer o rejunte, conforme a causa.' },
+            { titulo: 'Raspar e secar', detalhe: 'Tirar tinta e reboco soltos e deixar a parede secar de 7 a 10 dias.' },
+            { titulo: 'Impermeabilizar', detalhe: '3 demãos cruzadas de argamassa polimérica.' },
+            { titulo: 'Regularizar e pintar', detalhe: 'Massa acrílica, fundo preparador e 2 demãos de tinta antimofo.' }
           ],
-          cuidados: ['Desligar o disjuntor se houver tomada ou interruptor na parede úmida.', 'Se houver mofo, limpar com água sanitária diluída antes de impermeabilizar.', 'Usar luvas e máscara para raspar e lixar.'],
+          cuidados: ['Desligar o disjuntor se houver tomada na parede úmida.', 'Não fechar a parede ainda úmida: a mancha volta.'],
           prazoDias: 10, demo: true
         },
         materiais: [
@@ -1259,10 +1299,10 @@ var Demo = (function () {
     suggest: function (id) {
       var it = find(id);
       if (it.tituloAuto) { it.titulo = 'Serviço descrito por áudio'; it.tituloAuto = false; }
-      if (!it.descricao && it.audios.length) it.descricao = 'Na versão real, o Claude resume aqui o problema que a pessoa contou no áudio.';
+      if (!it.descricao && it.audios.length) it.descricao = 'Na versão real, aqui aparece o resumo do problema contado no áudio.';
       it.sugestao = {
         demo: true,
-        diagnostico: 'Na versão real, o Claude lê a descrição "' + it.titulo + '" e as fotos e escreve aqui um diagnóstico com as causas prováveis e o que conferir antes de começar.',
+        diagnostico: 'Na versão real, aqui aparece um diagnóstico curto de "' + it.titulo + '": causa provável e o que conferir antes de começar.',
         passos: [
           { titulo: 'Avaliar no local', detalhe: 'Conferir o problema, medir a área e confirmar a causa.' },
           { titulo: 'Preparar e proteger', detalhe: 'Isolar a área, proteger piso e móveis e separar ferramentas.' },
