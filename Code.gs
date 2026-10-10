@@ -2,7 +2,7 @@
  * OBRA DA CASA — backend (Google Apps Script)
  * A página fica no GitHub Pages e conversa com este script.
  * Dados: Planilha Google · Fotos e áudios: Google Drive · Avisos: Gmail
- * Transcrição do áudio: Groq (Whisper) · Sugestão de execução e materiais: API do Claude
+ * Transcrição do áudio: ElevenLabs (Scribe) · Sugestão de execução e materiais: API do Claude
  *
  * Segurança: o script usa só a permissão "drive.file" (enxerga apenas a planilha, a pasta e os
  * arquivos que ele mesmo criou), mais envio de e-mail, chamadas externas e gatilhos.
@@ -13,7 +13,7 @@
  *      o PIN de aprovação e o aviso automático por e-mail. O PIN aparece no Registro de execução.
  *   2. Configurações do projeto > Propriedades do script:
  *        ANTHROPIC_API_KEY = chave da API do Claude (console.anthropic.com)
- *        GROQ_API_KEY      = chave da Groq (console.groq.com)
+ *        ELEVENLABS_API_KEY = chave da ElevenLabs (elevenlabs.io > Developers > API Keys)
  *      Opcionais: EMAIL_DONO, EMAIL_PRESTADOR, NOME_DONO, NOME_PRESTADOR, PAGE_URL,
  *                 OWNER_PIN, CLAUDE_MODEL (padrão claude-sonnet-5-5), AUTO_SUGGEST=false.
  *   3. Implantar > Nova implantação > App da Web — Executar como: Eu · Acesso: Qualquer pessoa.
@@ -62,7 +62,7 @@ const ROUTES = {
     return {
       items: readAll_(),
       hasClaude: !!prop_('ANTHROPIC_API_KEY'),
-      hasTranscription: !!prop_('GROQ_API_KEY'),
+      hasTranscription: !!(prop_('ELEVENLABS_API_KEY') || prop_('GROQ_API_KEY')),
       autoSuggest: prop_('AUTO_SUGGEST') !== 'false',
       dono: nomeDono_(), prestador: nomePrestador_()
     };
@@ -204,19 +204,46 @@ const ROUTES = {
   }
 };
 
-/* ---------- Transcrição (Groq · Whisper) ---------- */
+/* ---------- Transcrição (ElevenLabs · Scribe; Groq só como reserva) ---------- */
 
 function transcribe_(blob) {
-  const key = prop_('GROQ_API_KEY');
-  if (!key) return '';
+  const eleven = prop_('ELEVENLABS_API_KEY');
+  if (eleven) {
+    const res = UrlFetchApp.fetch('https://api.elevenlabs.io/v1/speech-to-text', {
+      method: 'post', muteHttpExceptions: true,
+      headers: { 'xi-api-key': eleven },
+      payload: { file: blob, model_id: prop_('ELEVENLABS_MODEL') || 'scribe_v2', language_code: 'por', tag_audio_events: 'false' }
+    });
+    const body = JSON.parse(res.getContentText() || '{}');
+    if (res.getResponseCode() !== 200) {
+      const det = body.detail && (body.detail.message || body.detail.status || JSON.stringify(body.detail));
+      throw new Error('Transcrição falhou: ' + (det || res.getResponseCode()));
+    }
+    return clean_(body.text, 4000);
+  }
+  const groq = prop_('GROQ_API_KEY');
+  if (!groq) return '';
   const res = UrlFetchApp.fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
     method: 'post', muteHttpExceptions: true,
-    headers: { Authorization: 'Bearer ' + key },
+    headers: { Authorization: 'Bearer ' + groq },
     payload: { file: blob, model: 'whisper-large-v3-turbo', language: 'pt', response_format: 'json', temperature: '0' }
   });
   const body = JSON.parse(res.getContentText() || '{}');
   if (res.getResponseCode() !== 200) throw new Error('Transcrição falhou: ' + ((body.error && body.error.message) || res.getResponseCode()));
   return clean_(body.text, 4000);
+}
+
+/** Rode pelo menu Executar para testar a chave de transcrição com um áudio curto e silencioso. */
+function testarTranscricao() {
+  const sr = 16000, n = sr, bytes = [];
+  const w = function (s) { for (let i = 0; i < s.length; i++) bytes.push(s.charCodeAt(i)); };
+  const u32 = function (v) { bytes.push(v & 255, (v >> 8) & 255, (v >> 16) & 255, (v >> 24) & 255); };
+  const u16 = function (v) { bytes.push(v & 255, (v >> 8) & 255); };
+  w('RIFF'); u32(36 + n * 2); w('WAVE'); w('fmt '); u32(16); u16(1); u16(1); u32(sr); u32(sr * 2); u16(2); u16(16); w('data'); u32(n * 2);
+  for (let i = 0; i < n; i++) u16(0);
+  const blob = Utilities.newBlob(bytes.map(function (b) { return b > 127 ? b - 256 : b; }), 'audio/wav', 'teste.wav');
+  Logger.log('Serviço usado: ' + (prop_('ELEVENLABS_API_KEY') ? 'ElevenLabs' : prop_('GROQ_API_KEY') ? 'Groq' : 'nenhum'));
+  Logger.log('Resposta: "' + transcribe_(blob) + '" (vazio é o esperado para silêncio)');
 }
 
 /* ---------- Sugestão do Claude ---------- */
@@ -400,7 +427,7 @@ function setup() {
 
   Logger.log('Planilha: https://docs.google.com/spreadsheets/d/' + props.getProperty('SHEET_ID') + '/edit');
   Logger.log('Avisos para: dono ' + (props.getProperty('EMAIL_DONO') || 'FALTA') + ' · prestador ' + (props.getProperty('EMAIL_PRESTADOR') || 'FALTA'));
-  ['ANTHROPIC_API_KEY', 'GROQ_API_KEY', 'PAGE_URL'].forEach(function (k) { Logger.log(k + ': ' + (props.getProperty(k) ? 'ok' : 'FALTA configurar')); });
+  ['ANTHROPIC_API_KEY', 'ELEVENLABS_API_KEY', 'PAGE_URL'].forEach(function (k) { Logger.log(k + ': ' + (props.getProperty(k) ? 'ok' : 'FALTA configurar')); });
 }
 
 /**
