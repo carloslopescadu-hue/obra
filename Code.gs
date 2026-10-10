@@ -381,7 +381,7 @@ function sendMail_(to, subject, intro, it, cta) {
 function setup() {
   const props = PropertiesService.getScriptProperties();
   if (!props.getProperty('SHEET_ID')) {
-    const ss = gapi_('post', SHEETS_API + '', { properties: { title: 'Obra da Casa — base de dados' }, sheets: [{ properties: { title: SHEET_NAME, gridProperties: { frozenRowCount: 1 } } }] });
+    const ss = gapi_('post', 'https://sheets.googleapis.com/v4/spreadsheets', { properties: { title: 'Obra da Casa — base de dados' }, sheets: [{ properties: { title: SHEET_NAME, gridProperties: { frozenRowCount: 1 } } }] });
     props.setProperty('SHEET_ID', ss.spreadsheetId);
   }
   if (!props.getProperty('FOLDER_ID')) props.setProperty('FOLDER_ID', createFolder_('Obra da Casa — fotos e áudios'));
@@ -401,6 +401,45 @@ function setup() {
   Logger.log('Planilha: https://docs.google.com/spreadsheets/d/' + props.getProperty('SHEET_ID') + '/edit');
   Logger.log('Avisos para: dono ' + (props.getProperty('EMAIL_DONO') || 'FALTA') + ' · prestador ' + (props.getProperty('EMAIL_PRESTADOR') || 'FALTA'));
   ['ANTHROPIC_API_KEY', 'GROQ_API_KEY', 'PAGE_URL'].forEach(function (k) { Logger.log(k + ': ' + (props.getProperty(k) ? 'ok' : 'FALTA configurar')); });
+}
+
+/**
+ * Migração única para a permissão restrita (drive.file): copia a planilha, as fotos e os áudios
+ * para uma planilha e uma pasta novas, criadas pelo próprio app. Os originais ficam intactos
+ * (renomeados como "antiga") como cópia de segurança. Rode uma vez com o acesso amplo liberado.
+ */
+function migrarParaAcessoRestrito() {
+  const props = PropertiesService.getScriptProperties();
+  if (props.getProperty('MIGRADO_EM')) { Logger.log('Já migrado em ' + props.getProperty('MIGRADO_EM')); return; }
+  const velhaPlanilha = props.getProperty('SHEET_ID'), velhaPasta = props.getProperty('FOLDER_ID');
+  const antigos = readAll_();
+  Logger.log('Serviços lidos da planilha antiga: ' + antigos.length);
+
+  const nova = gapi_('post', 'https://sheets.googleapis.com/v4/spreadsheets', { properties: { title: 'Obra da Casa — base de dados' }, sheets: [{ properties: { title: SHEET_NAME, gridProperties: { frozenRowCount: 1 } } }] });
+  const pasta = createFolder_('Obra da Casa — fotos e áudios');
+  let copiados = 0, falhas = 0;
+  const copiar = function (id, publico) {
+    try {
+      const f = gapi_('post', DRIVE_API + 'files/' + encodeURIComponent(id) + '/copy?fields=id', { parents: [pasta] });
+      if (publico) shareAnyone_(f.id);
+      copiados++; return f.id;
+    } catch (e) { falhas++; Logger.log('Não copiei ' + id + ': ' + e.message); return id; }
+  };
+  const linhas = antigos.map(function (it) {
+    it.fotos = it.fotos.map(function (f) { f.id = copiar(f.id, true); return f; });
+    it.audios = it.audios.map(function (a) { a.id = copiar(a.id, false); return a; });
+    return itemToRow_(it);
+  });
+  const total = linhas.length + 1;
+  gapi_('put', SHEETS_API + nova.spreadsheetId + '/values/' + rng_('A1:' + LAST_COL_ + total) + '?valueInputOption=RAW', { values: [HEADERS].concat(linhas) });
+
+  try { gapi_('patch', DRIVE_API + 'files/' + velhaPlanilha + '?fields=id', { name: 'Obra da Casa — base de dados (antiga, cópia de segurança)' }); } catch (e) {}
+  try { gapi_('patch', DRIVE_API + 'files/' + velhaPasta + '?fields=id', { name: 'Obra da Casa — fotos e áudios (antiga, cópia de segurança)' }); } catch (e) {}
+  props.setProperties({ SHEET_ID_ANTIGA: velhaPlanilha, FOLDER_ID_ANTIGA: velhaPasta, SHEET_ID: nova.spreadsheetId, FOLDER_ID: pasta, MIGRADO_EM: new Date().toISOString() });
+  HEADER_OK_ = false;
+  const conferido = readAll_().length;
+  Logger.log('Nova planilha: https://docs.google.com/spreadsheets/d/' + nova.spreadsheetId + '/edit');
+  Logger.log('Arquivos copiados: ' + copiados + ' · falhas: ' + falhas + ' · serviços na nova planilha: ' + conferido);
 }
 
 /** Rode pelo menu Executar para conferir se o script ainda alcança a planilha, a pasta e os arquivos. */
