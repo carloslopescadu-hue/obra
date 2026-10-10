@@ -4,6 +4,10 @@
  * Dados: Planilha Google · Fotos e áudios: Google Drive · Avisos: Gmail
  * Transcrição do áudio: Groq (Whisper) · Sugestão de execução e materiais: API do Claude
  *
+ * Segurança: o script usa só a permissão "drive.file" (enxerga apenas a planilha, a pasta e os
+ * arquivos que ele mesmo criou), mais envio de e-mail, chamadas externas e gatilhos.
+ * Planilha e Drive são acessados pelas APIs REST do Google com essa permissão restrita.
+ *
  * Configuração (uma vez):
  *   1. Rode `setup` (menu Executar) e autorize. Ela cria a planilha, a pasta no Drive,
  *      o PIN de aprovação e o aviso automático por e-mail. O PIN aparece no Registro de execução.
@@ -64,6 +68,7 @@ const ROUTES = {
     };
   },
   create: function (fields) {
+    limite_('create', 40, 3600, 'Muitos serviços criados em pouco tempo. Tente de novo mais tarde.');
     return withLock_(function () {
       const items = readAll_();
       const now = new Date().toISOString();
@@ -80,7 +85,7 @@ const ROUTES = {
         fotos: [], audios: [], materiais: [], sugestao: null, sugestaoStatus: '',
         avisos: { novo: now }, historico: [{ tipo: 'criado', por: clean_(fields.criadoPor, 40), em: now }]
       };
-      sheet_().appendRow(itemToRow_(it));
+      appendRow_(it);
       return it;
     });
   },
@@ -106,42 +111,55 @@ const ROUTES = {
     });
   },
   addPhoto: function (id, dataUrl, nome) {
-    const file = saveDataUrl_(dataUrl, nome || 'foto.jpg', 8 * 1024 * 1024);
-    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-    return mutate_(id, function (it) { it.fotos.push({ id: file.getId(), nome: file.getName() }); });
+    if (!findRow_(id)) throw new Error('Este serviço foi apagado.');
+    limite_('upload', 80, 3600, 'Muitos arquivos enviados em pouco tempo. Tente de novo mais tarde.');
+    const f = saveDataUrl_(dataUrl, nome || 'foto.jpg', 8 * 1024 * 1024, /^image\/(jpeg|png|webp|gif)$/);
+    shareAnyone_(f.id);
+    return mutate_(id, function (it) { it.fotos.push({ id: f.id, nome: f.name }); });
   },
+  /** Só apaga o arquivo se ele pertencer a este serviço. */
   removePhoto: function (id, fileId) {
     return mutate_(id, function (it) {
+      const tinha = it.fotos.some(function (f) { return f.id === fileId; });
       it.fotos = it.fotos.filter(function (f) { return f.id !== fileId; });
-      trash_(fileId);
+      if (tinha) trash_(fileId);
     });
   },
   addAudio: function (id, dataUrl, duracao, nome) {
     if (num_(duracao) > 65) throw new Error('O áudio pode ter no máximo 1 minuto.');
-    const file = saveDataUrl_(dataUrl, nome || 'audio.webm', 8 * 1024 * 1024);
+    if (!findRow_(id)) throw new Error('Este serviço foi apagado.');
+    limite_('upload', 80, 3600, 'Muitos arquivos enviados em pouco tempo. Tente de novo mais tarde.');
+    limite_('audio', 40, 3600, 'Muitos áudios em pouco tempo. Tente de novo mais tarde.');
+    const f = saveDataUrl_(dataUrl, nome || 'audio.webm', 8 * 1024 * 1024, /^(audio|video)\/[\w.+-]+$/);
     let transcricao = '', erro = '';
-    try { transcricao = transcribe_(file.getBlob()); } catch (e) { erro = e.message; }
+    try { transcricao = transcribe_(f.blob); } catch (e) { erro = e.message; }
     return mutate_(id, function (it) {
       it.audios.push({
-        id: file.getId(), duracao: Math.round(num_(duracao)), mime: file.getMimeType(),
+        id: f.id, duracao: Math.round(num_(duracao)), mime: f.mimeType,
         criadoEm: new Date().toISOString(), transcricao: transcricao, erroTranscricao: erro
       });
     });
   },
+  /** Só apaga o arquivo se ele pertencer a este serviço. */
   removeAudio: function (id, fileId) {
     return mutate_(id, function (it) {
+      const tinha = it.audios.some(function (a) { return a.id === fileId; });
       it.audios = it.audios.filter(function (a) { return a.id !== fileId; });
-      trash_(fileId);
+      if (tinha) trash_(fileId);
     });
   },
+  /** Só entrega áudios que pertencem a algum serviço da obra. */
   getAudio: function (fileId) {
-    const blob = DriveApp.getFileById(fileId).getBlob();
+    const dono = readAll_().some(function (it) { return it.audios.some(function (a) { return a.id === fileId; }); });
+    if (!dono) throw new Error('Áudio não encontrado.');
+    const blob = getBlob_(fileId);
     return 'data:' + blob.getContentType() + ';base64,' + Utilities.base64Encode(blob.getBytes());
   },
-  checkPin: function (pin) { return checkPin_(pin); },
+  checkPin: function (pin) { return guardPin_(pin); },
   /** Qualquer pessoa pode aprovar; cada mudança fica no histórico com o nome de quem fez. */
   setStatus: function (id, status, por) {
     if (STATUSES.indexOf(status) === -1) throw new Error('Status inválido.');
+    limite_('status', 120, 3600, 'Muitas mudanças de aprovação em pouco tempo. Tente de novo mais tarde.');
     const nome = clean_(por, 40);
     if (!nome) throw new Error('Informe seu nome para registrar a aprovação.');
     let mudou = false;
@@ -156,7 +174,7 @@ const ROUTES = {
   },
   /** Ajuste em lote pedido pelo dono: limpa datas e volta todos para "aguardando". Exige PIN. */
   resetAll: function (pin, por) {
-    if (!checkPin_(pin)) throw new Error('PIN incorreto.');
+    if (!guardPin_(pin)) throw new Error('PIN incorreto.');
     const nome = clean_(por, 40) || nomeDono_();
     readAll_().forEach(function (item) {
       mutate_(item.id, function (x) {
@@ -170,16 +188,20 @@ const ROUTES = {
     return readAll_();
   },
   remove: function (id, pin) {
-    if (!checkPin_(pin)) throw new Error('PIN incorreto.');
+    if (!guardPin_(pin)) throw new Error('PIN incorreto.');
     return withLock_(function () {
       const r = findRow_(id);
       if (!r) return true;
       r.item.fotos.concat(r.item.audios).forEach(function (f) { trash_(f.id); });
-      sheet_().deleteRow(r.row);
+      deleteRow_(r.row);
       return true;
     });
   },
-  suggest: function (id) { return suggest_(id); }
+  suggest: function (id) {
+    limite_('sug:' + id, 1, 60, 'Aguarde um minuto antes de pedir outra sugestão para este serviço.');
+    limite_('sug', 20, 3600, 'Limite de sugestões por hora atingido. Tente de novo mais tarde.');
+    return suggest_(id);
+  }
 };
 
 /* ---------- Transcrição (Groq · Whisper) ---------- */
@@ -210,7 +232,7 @@ function suggest_(id) {
   const content = [];
   it.fotos.slice(0, 3).forEach(function (f) {
     try {
-      const blob = DriveApp.getFileById(f.id).getBlob();
+      const blob = getBlob_(f.id);
       content.push({ type: 'image', source: { type: 'base64', media_type: blob.getContentType(), data: Utilities.base64Encode(blob.getBytes()) } });
     } catch (e) { /* foto apagada */ }
   });
@@ -358,78 +380,96 @@ function sendMail_(to, subject, intro, it, cta) {
 
 function setup() {
   const props = PropertiesService.getScriptProperties();
-  let ssId = props.getProperty('SHEET_ID');
-  if (!ssId) {
-    ssId = SpreadsheetApp.create('Obra da Casa — base de dados').getId();
-    props.setProperty('SHEET_ID', ssId);
+  if (!props.getProperty('SHEET_ID')) {
+    const ss = gapi_('post', SHEETS_API + '', { properties: { title: 'Obra da Casa — base de dados' }, sheets: [{ properties: { title: SHEET_NAME, gridProperties: { frozenRowCount: 1 } } }] });
+    props.setProperty('SHEET_ID', ss.spreadsheetId);
   }
-  const ss = SpreadsheetApp.openById(ssId);
-  let sh = ss.getSheetByName(SHEET_NAME);
-  if (!sh) { sh = ss.getSheets()[0]; sh.setName(SHEET_NAME); }
-  sh.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]).setFontWeight('bold');
-  sh.setFrozenRows(1);
-  sh.getRange(1, 1, sh.getMaxRows(), HEADERS.length).setNumberFormat('@');
-
+  if (!props.getProperty('FOLDER_ID')) props.setProperty('FOLDER_ID', createFolder_('Obra da Casa — fotos e áudios'));
   const defaults = {
-    FOLDER_ID: function () { return DriveApp.createFolder('Obra da Casa — fotos e áudios').getId(); },
     OWNER_PIN: function () { return String(Math.floor(100000 + Math.random() * 900000)); },
-    EMAIL_DONO: function () { return Session.getEffectiveUser().getEmail(); },
-    EMAIL_PRESTADOR: function () { return Session.getEffectiveUser().getEmail(); },
     NOME_DONO: function () { return 'Carlos'; },
     NOME_PRESTADOR: function () { return 'Júlio'; },
     PAGE_URL: function () { return 'https://carloslopescadu-hue.github.io/obra/'; }
   };
   Object.keys(defaults).forEach(function (k) { if (!props.getProperty(k)) props.setProperty(k, defaults[k]()); });
+  ensureHeader_();
 
   ScriptApp.getProjectTriggers().forEach(function (t) { if (t.getHandlerFunction() === 'enviarAvisos') ScriptApp.deleteTrigger(t); });
   ScriptApp.newTrigger('enviarAvisos').timeBased().everyMinutes(5).create();
-  MailApp.getRemainingDailyQuota(); // pede a autorização de e-mail já no setup
+  MailApp.getRemainingDailyQuota();
 
-  Logger.log('Planilha: ' + ss.getUrl());
-  Logger.log('SEU PIN DE APROVAÇÃO: ' + props.getProperty('OWNER_PIN'));
-  Logger.log('Avisos para: dono ' + props.getProperty('EMAIL_DONO') + ' · prestador ' + props.getProperty('EMAIL_PRESTADOR'));
-  ['ANTHROPIC_API_KEY', 'GROQ_API_KEY', 'PAGE_URL'].forEach(function (k) {
-    Logger.log(k + ': ' + (props.getProperty(k) ? 'ok' : 'FALTA configurar'));
+  Logger.log('Planilha: https://docs.google.com/spreadsheets/d/' + props.getProperty('SHEET_ID') + '/edit');
+  Logger.log('Avisos para: dono ' + (props.getProperty('EMAIL_DONO') || 'FALTA') + ' · prestador ' + (props.getProperty('EMAIL_PRESTADOR') || 'FALTA'));
+  ['ANTHROPIC_API_KEY', 'GROQ_API_KEY', 'PAGE_URL'].forEach(function (k) { Logger.log(k + ': ' + (props.getProperty(k) ? 'ok' : 'FALTA configurar')); });
+}
+
+/** Rode pelo menu Executar para conferir se o script ainda alcança a planilha, a pasta e os arquivos. */
+function verificarAcesso() {
+  const itens = readAll_();
+  Logger.log('Planilha OK: ' + itens.length + ' serviços.');
+  const pasta = gapi_('get', DRIVE_API + 'files/' + prop_('FOLDER_ID') + '?fields=id,name');
+  Logger.log('Pasta OK: ' + pasta.name);
+  let testados = 0, falhas = 0;
+  itens.forEach(function (it) {
+    it.audios.concat(it.fotos).slice(0, 1).forEach(function (f) {
+      testados++;
+      try { gapi_('get', DRIVE_API + 'files/' + f.id + '?fields=id'); } catch (e) { falhas++; Logger.log('Sem acesso ao arquivo ' + f.id + ': ' + e.message); }
+    });
   });
+  Logger.log('Arquivos testados: ' + testados + ' · sem acesso: ' + falhas);
 }
 
 /* ---------- Planilha ---------- */
 
-let SHEET_CACHE_ = null;
-function sheet_() {
-  if (SHEET_CACHE_) return SHEET_CACHE_;
-  const id = prop_('SHEET_ID');
-  if (!id) throw new Error('Rode a função setup antes de usar.');
-  const sh = SpreadsheetApp.openById(id).getSheetByName(SHEET_NAME);
-  if (sh.getLastColumn() < HEADERS.length) {
-    sh.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]).setFontWeight('bold');
-    sh.getRange(1, 1, sh.getMaxRows(), HEADERS.length).setNumberFormat('@');
+const SHEETS_API = 'https://sheets.googleapis.com/v4/spreadsheets/';
+const DRIVE_API = 'https://www.googleapis.com/drive/v3/';
+function sid_() { const id = prop_('SHEET_ID'); if (!id) throw new Error('Rode a função setup antes de usar.'); return id; }
+function colA1_(n) { let s = ''; while (n > 0) { const m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - 1) / 26); } return s; }
+function rng_(a1) { return encodeURIComponent(SHEET_NAME + '!' + a1); }
+const LAST_COL_ = colA1_(HEADERS.length);
+
+let HEADER_OK_ = false;
+function ensureHeader_() {
+  if (HEADER_OK_) return;
+  const r = gapi_('get', SHEETS_API + sid_() + '/values/' + rng_('A1:' + LAST_COL_ + '1'));
+  const atual = (r.values && r.values[0]) || [];
+  if (atual.join('|') !== HEADERS.join('|')) {
+    gapi_('put', SHEETS_API + sid_() + '/values/' + rng_('A1:' + LAST_COL_ + '1') + '?valueInputOption=RAW', { values: [HEADERS] });
   }
-  SHEET_CACHE_ = sh;
-  return sh;
+  HEADER_OK_ = true;
+}
+function rows_() {
+  ensureHeader_();
+  const r = gapi_('get', SHEETS_API + sid_() + '/values/' + rng_('A2:' + LAST_COL_) + '?valueRenderOption=UNFORMATTED_VALUE');
+  return (r.values || []).map(function (row) { while (row.length < HEADERS.length) row.push(''); return row; });
 }
 
 function readAll_() {
-  const sh = sheet_();
-  const last = sh.getLastRow();
-  if (last < 2) return [];
-  return sh.getRange(2, 1, last - 1, HEADERS.length).getValues()
-    .map(rowToItem_).filter(function (x) { return x.id; })
+  return rows_().map(rowToItem_).filter(function (x) { return x.id; })
     .sort(function (a, b) { return a.numero - b.numero; });
 }
 
 function findRow_(id) {
-  const sh = sheet_();
-  const last = sh.getLastRow();
-  if (last < 2) return null;
-  const ids = sh.getRange(2, 1, last - 1, 1).getValues();
-  for (let i = 0; i < ids.length; i++) {
-    if (String(ids[i][0]) === String(id)) {
-      const row = i + 2;
-      return { row: row, item: rowToItem_(sh.getRange(row, 1, 1, HEADERS.length).getValues()[0]) };
-    }
+  const rows = rows_();
+  for (let i = 0; i < rows.length; i++) {
+    if (String(rows[i][0]) === String(id)) return { row: i + 2, item: rowToItem_(rows[i]) };
   }
   return null;
+}
+
+function writeRow_(row, it) {
+  const a1 = 'A' + row + ':' + LAST_COL_ + row;
+  gapi_('put', SHEETS_API + sid_() + '/values/' + rng_(a1) + '?valueInputOption=RAW', { values: [itemToRow_(it)] });
+}
+function appendRow_(it) {
+  ensureHeader_();
+  gapi_('post', SHEETS_API + sid_() + '/values/' + rng_('A1:' + LAST_COL_) + ':append?valueInputOption=RAW&insertDataOption=INSERT_ROWS', { values: [itemToRow_(it)] });
+}
+function deleteRow_(row) {
+  const meta = gapi_('get', SHEETS_API + sid_() + '?fields=sheets.properties');
+  const sh = (meta.sheets || []).map(function (x) { return x.properties; }).filter(function (p) { return p.title === SHEET_NAME; })[0];
+  if (!sh) throw new Error('Aba da planilha não encontrada.');
+  gapi_('post', SHEETS_API + sid_() + ':batchUpdate', { requests: [{ deleteDimension: { range: { sheetId: sh.sheetId, dimension: 'ROWS', startIndex: row - 1, endIndex: row } } }] });
 }
 
 function mutate_(id, fn, keepTimestamp) {
@@ -439,7 +479,7 @@ function mutate_(id, fn, keepTimestamp) {
     fn(r.item);
     computeTotals_(r.item);
     if (!keepTimestamp) r.item.atualizadoEm = new Date().toISOString();
-    sheet_().getRange(r.row, 1, 1, HEADERS.length).setValues([itemToRow_(r.item)]);
+    writeRow_(r.row, r.item);
     return r.item;
   });
 }
@@ -456,7 +496,6 @@ function rowToItem_(row) {
   const it = {};
   HEADERS.forEach(function (h, i) {
     let v = row[i];
-    if (v instanceof Date) v = Utilities.formatDate(v, Session.getScriptTimeZone(), 'yyyy-MM-dd');
     if (JSON_FIELDS.indexOf(h) !== -1) {
       try { v = v ? JSON.parse(v) : null; } catch (e) { v = null; }
     }
@@ -495,6 +534,60 @@ function osNum_(it) { return 'OS ' + ('00' + it.numero).slice(-3); }
 function fmtData_(s) { const p = String(s).split('-'); return p.length === 3 ? p[2] + '/' + p[1] : s; }
 function esc_(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
 function checkPin_(pin) { const p = prop_('OWNER_PIN'); return !!p && String(pin || '').trim() === p; }
+/** PIN com trava: 5 erros em 15 minutos bloqueiam novas tentativas por 15 minutos. */
+function guardPin_(pin) {
+  const c = CacheService.getScriptCache();
+  if (c.get('pin:lock')) throw new Error('Muitas tentativas de PIN. Tente de novo em 15 minutos.');
+  if (checkPin_(pin)) { c.remove('pin:fail'); return true; }
+  const n = Number(c.get('pin:fail') || 0) + 1;
+  c.put('pin:fail', String(n), 900);
+  if (n >= 5) c.put('pin:lock', '1', 900);
+  return false;
+}
+/** Limite simples por janela de tempo (contador no cache do script). */
+function limite_(chave, max, segundos, msg) {
+  const c = CacheService.getScriptCache();
+  const k = 'lim:' + chave + ':' + Math.floor(Date.now() / 1000 / segundos);
+  const n = Number(c.get(k) || 0);
+  if (n >= max) throw new Error(msg);
+  c.put(k, String(n + 1), segundos + 60);
+}
+/** Chamada às APIs do Google com o token restrito do próprio script. */
+function gapi_(method, url, body) {
+  const params = { method: method, muteHttpExceptions: true, headers: { Authorization: 'Bearer ' + ScriptApp.getOAuthToken() } };
+  if (body !== undefined) { params.contentType = 'application/json'; params.payload = JSON.stringify(body); }
+  const res = UrlFetchApp.fetch(url, params);
+  const code = res.getResponseCode(), txt = res.getContentText();
+  if (code >= 300) throw new Error('Google ' + code + ': ' + txt.slice(0, 180));
+  return txt ? JSON.parse(txt) : {};
+}
+function createFolder_(name) {
+  return gapi_('post', DRIVE_API + 'files?fields=id', { name: name, mimeType: 'application/vnd.google-apps.folder' }).id;
+}
+function createFile_(blob, name, folderId) {
+  const b = 'obra' + Utilities.getUuid().replace(/-/g, '');
+  const type = blob.getContentType() || 'application/octet-stream';
+  const meta = JSON.stringify({ name: name, parents: [folderId], mimeType: type });
+  const head = Utilities.newBlob('--' + b + '\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n' + meta + '\r\n--' + b + '\r\nContent-Type: ' + type + '\r\n\r\n').getBytes();
+  const tail = Utilities.newBlob('\r\n--' + b + '--').getBytes();
+  const res = UrlFetchApp.fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,mimeType', {
+    method: 'post', muteHttpExceptions: true, contentType: 'multipart/related; boundary=' + b,
+    headers: { Authorization: 'Bearer ' + ScriptApp.getOAuthToken() },
+    payload: head.concat(blob.getBytes(), tail)
+  });
+  if (res.getResponseCode() >= 300) throw new Error('Não consegui salvar o arquivo: ' + res.getContentText().slice(0, 180));
+  return JSON.parse(res.getContentText());
+}
+function shareAnyone_(fileId) {
+  gapi_('post', DRIVE_API + 'files/' + fileId + '/permissions?fields=id', { role: 'reader', type: 'anyone' });
+}
+function getBlob_(fileId) {
+  const res = UrlFetchApp.fetch(DRIVE_API + 'files/' + encodeURIComponent(fileId) + '?alt=media', {
+    muteHttpExceptions: true, headers: { Authorization: 'Bearer ' + ScriptApp.getOAuthToken() }
+  });
+  if (res.getResponseCode() >= 300) throw new Error('Arquivo indisponível.');
+  return res.getBlob();
+}
 function num_(v) {
   if (typeof v === 'number') return isFinite(v) ? v : 0;
   let s = String(v == null ? '' : v).replace(/[^\d,.\-]/g, '');
@@ -511,11 +604,14 @@ function sanitizeMaterials_(list) {
     };
   }).filter(function (m) { return m.nome || m.qtd || m.valor; });
 }
-function saveDataUrl_(dataUrl, nome, maxBytes) {
+function saveDataUrl_(dataUrl, nome, maxBytes, tipoOk) {
   const m = String(dataUrl).match(/^data:([^;,]+)[^,]*;base64,(.+)$/);
   if (!m) throw new Error('Arquivo inválido.');
+  if (tipoOk && !tipoOk.test(m[1])) throw new Error('Tipo de arquivo não aceito.');
   const bytes = Utilities.base64Decode(m[2]);
   if (bytes.length > maxBytes) throw new Error('Arquivo grande demais.');
-  return DriveApp.getFolderById(prop_('FOLDER_ID')).createFile(Utilities.newBlob(bytes, m[1], nome));
+  const blob = Utilities.newBlob(bytes, m[1], clean_(nome, 80).replace(/[^\w.\- ]/g, '_') || 'arquivo');
+  const f = createFile_(blob, blob.getName(), prop_('FOLDER_ID'));
+  return { id: f.id, name: f.name, mimeType: f.mimeType || m[1], blob: blob };
 }
-function trash_(fileId) { try { DriveApp.getFileById(fileId).setTrashed(true); } catch (e) { /* já removido */ } }
+function trash_(fileId) { try { gapi_('patch', DRIVE_API + 'files/' + encodeURIComponent(fileId) + '?fields=id', { trashed: true }); } catch (e) { /* já removido ou fora do alcance */ } }
