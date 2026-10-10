@@ -78,8 +78,9 @@ svg.i { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none;
 .top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: color-mix(in srgb, var(--hero) 92%, transparent); backdrop-filter: saturate(1.4) blur(12px); -webkit-backdrop-filter: saturate(1.4) blur(12px); color: var(--hero-ink); border-bottom: 1px solid color-mix(in srgb, var(--hero-accent) 30%, transparent); }
 .top .wrap { display: flex; align-items: center; gap: 10px; padding-block: 10px; }
 .brand { display: flex; align-items: center; gap: 10px; min-width: 0; margin-right: auto; }
-.emblem { width: 38px; height: 38px; flex: none; }
-.emblem, .hero-mark, .empty svg.big, .foot svg { --emb-shield: var(--hero-accent); --emb-line: color-mix(in srgb, var(--hero-accent) 55%, #3a2a0c); --emb-ink: var(--hero); }
+.emblem { width: 40px; height: 40px; flex: none; }
+.emblem, .hero-mark, .empty svg.big, .foot svg { --emb-ink: #151B27; }
+.hero-mark { filter: grayscale(1); }
 .brand-txt { display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
 .brand h1 { margin: 0; font-family: var(--display); font-size: 17px; font-weight: 800; font-stretch: 118%; letter-spacing: .06em; text-transform: uppercase; line-height: 1.1; white-space: nowrap; }
 .brand span { color: var(--hero-muted); font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -103,7 +104,7 @@ svg.i { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none;
 @media (max-width: 560px) {
   .brand span { display: none; }
   .brand h1 { font-size: 15px; font-stretch: 108%; letter-spacing: .04em; }
-  .emblem { width: 34px; height: 34px; }
+  .emblem { width: 36px; height: 36px; }
   .btn-label-long, .own-txt { display: none; }
   .top .btn { padding: 8px 12px; }
 }
@@ -161,7 +162,7 @@ svg.i { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none;
 .chip[aria-pressed="true"] { background: var(--surface); color: var(--ink); border-color: var(--ink); }
 @media (max-width: 560px) {
   .bar { flex-direction: column; align-items: stretch; }
-  .tabs { width: 100%; } .tabs button { flex: 1; justify-content: center; }
+  .tabs { width: 100%; } .tabs button { flex: 1; justify-content: center; padding: 8px 6px; font-size: 14px; }
   .chips { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
   .chips::-webkit-scrollbar { display: none; }
   .chip { flex: none; }
@@ -197,7 +198,10 @@ svg.i { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none;
 .flags span { display: inline-flex; align-items: center; gap: 4px; }
 .flags svg.i { width: 14px; height: 14px; }
 .flags .ready { color: var(--accent); font-weight: 700; }
-.card-status { flex: none; }
+.card-status { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.by { font-size: 12.5px; color: var(--muted); }
+.by b { color: var(--ink); font-weight: 700; }
+.s-aprovado-txt b { color: var(--ok); } .s-nao_aprovado-txt b { color: var(--no); }
 .fields { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 10px; padding-top: 14px; border-top: 1px solid var(--line); align-items: start; }
 .fields > .cell { grid-column: span 2; }
 .dif-cell { background: var(--ok-bg); border-radius: var(--r-sm); padding: 7px 12px; align-self: stretch; justify-content: center; }
@@ -208,6 +212,7 @@ svg.i { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none;
 .fields .calc { padding: 4px 0 0; }
 .cell { min-width: 0; display: flex; flex-direction: column; gap: 5px; }
 .lbl { font-size: 12.5px; color: var(--muted); font-weight: 600; }
+.opt { font-weight: 400; opacity: .75; }
 .in { width: 100%; min-width: 0; border: 1px solid var(--line); background: var(--surface-2); border-radius: var(--r-sm); padding: 9px 11px; font-variant-numeric: tabular-nums; transition: border-color .15s, background .15s; }
 .in:hover { border-color: color-mix(in srgb, var(--ink) 25%, var(--line)); }
 .in:focus { background: var(--surface); border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); }
@@ -232,6 +237,7 @@ svg.i { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none;
 @media (max-width: 560px) {
   .card { padding: 14px; gap: 12px; }
   .card-top { flex-direction: column; gap: 12px; }
+  .card-status { align-items: stretch; }
   .card-status, .card-status .seg { width: 100%; }
   .card-status .seg button { flex: 1; }
   .svc { grid-template-columns: 56px minmax(0, 1fr); gap: 2px 12px; }
@@ -256,6 +262,12 @@ svg.i { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none;
 .ev.cl { margin-left: 0; border-top-left-radius: 0; border-bottom-left-radius: 0; }
 .ev.cr { margin-right: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; }
 .ev:hover { filter: brightness(.96); }
+.log { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; box-shadow: var(--shadow-sm); }
+.log-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding-bottom: 10px; }
+.log-head h2 { margin: 0; font-family: var(--display); font-size: 18px; font-weight: 800; }
+.log-list li { flex-wrap: wrap; row-gap: 2px; }
+.log-os { flex-basis: 100%; margin-left: 19px; border: 0; background: none; padding: 0; text-align: left; color: var(--muted); font-size: 13px; text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 2px; }
+.log-os:hover { color: var(--ink); }
 .nodate { margin-top: 16px; }
 .nodate h3, .sec h3 { font-family: var(--display); font-size: 16px; color: var(--ink); margin: 0 0 8px; font-weight: 800; }
 .nodate .chips { flex-wrap: wrap; }
@@ -340,6 +352,14 @@ textarea.in { resize: vertical; min-height: 80px; line-height: 1.5; }
 .bigtotal { display: flex; justify-content: space-between; align-items: baseline; background: var(--accent-soft); border-radius: 12px; padding: 12px 14px; }
 .bigtotal span { font-weight: 700; color: var(--accent); font-size: 14px; }
 .bigtotal b { font-family: var(--display); font-size: 26px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.hist { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; border-top: 1px solid var(--line); }
+.hist li { display: flex; align-items: baseline; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+.hist li:last-child { border-bottom: 0; }
+.hdot { width: 9px; height: 9px; border-radius: 50%; flex: none; transform: translateY(1px); background: var(--muted); }
+.h-aprovado { background: var(--ok); } .h-nao_aprovado { background: var(--no); } .h-aguardando { background: var(--wait); } .h-new { background: var(--accent); }
+.htxt { flex: 1; min-width: 0; }
+.hwhen { color: var(--muted); font-size: 12.5px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.linkbtn { border: 0; background: none; padding: 0; color: var(--accent); font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
 .from-list { font-size: 12.5px; color: var(--ok); }
 .bigdif { display: flex; justify-content: space-between; align-items: baseline; background: var(--ok-bg); border-radius: 12px; padding: 12px 14px; }
 .bigdif span { font-weight: 700; color: var(--ok); font-size: 14px; }
@@ -371,6 +391,8 @@ textarea.in { resize: vertical; min-height: 80px; line-height: 1.5; }
 .cap-mic svg.i { color: var(--hero-accent); }
 .cap-mic small { color: color-mix(in srgb, var(--primary-ink) 70%, transparent); }
 .cap-mic .cap-n { background: var(--hero-accent); color: #16130D; }
+.who-pick { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.who-pick .btn { padding: 12px; font-size: 15px; }
 .pin-in { font-size: 26px; letter-spacing: .4em; text-align: center; font-variant-numeric: tabular-nums; }
 .lightbox { position: fixed; inset: 0; z-index: 60; background: rgb(0 0 0 / .9); display: grid; place-items: center; padding: 16px; }
 .lightbox img { max-width: 100%; max-height: 100%; border-radius: 10px; }
@@ -401,27 +423,31 @@ main.wrap { padding-block: 0 56px; }
 
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <symbol id="elmo" viewBox="0 0 64 64">
-    <circle cx="32" cy="32" r="30" fill="var(--emb-shield, #C9973F)"/>
-    <circle cx="32" cy="32" r="26" fill="none" stroke="var(--emb-line, #8A6420)" stroke-width="1.5"/>
-    <g transform="translate(-3.6 1.2)">
-      <path d="M16.6 24.2C19 12.4 27.8 6.2 37.6 6.6c10 .5 18.1 8 19.6 23.6l-4.2.5c-1.3-10.6-7.3-16.8-15.8-17.3-7.6-.4-13.5 3.3-15.9 10.9Z" fill="var(--emb-ink, #151B27)"/>
-      <path d="M19.4 22.6C22 14.6 29 9.9 37.6 10.1c8.9.3 15.3 6.7 17.1 19.9" fill="none" stroke="var(--emb-shield, #C9973F)" stroke-width="1.1" stroke-linecap="round" stroke-dasharray="2.4 2.2" opacity=".55"/>
-      <path d="M32.4 13.6h3.8l-.5 5.4h-2.8Z" fill="var(--emb-ink, #151B27)"/>
-      <path fill-rule="evenodd" fill="var(--emb-ink, #151B27)" d="M19.5 30.2c0-6.9 6.1-11.3 13.4-11.3 8.5 0 14.4 6 14.4 14.3v14.2c0 1.6 1.3 2.9 3 3.4-2.4 2.1-5.8 2.6-8.7 1.2l-5.4-3c-2.6 2.6-6.4 3.9-10.1 3.2l-3.7-4.1c-1.6-6.1-2.9-12-2.9-17.9ZM21.4 32c3.7-1.7 8.6-1.8 12.2.1-3.2 1.9-8.5 2-12.2-.1ZM24.3 35.2l1.6 12.2 2.9-.4-1.4-11.8Z"/>
-      <path d="M20.7 28c4.4-3.4 13.6-3.9 20.3-.6" fill="none" stroke="var(--emb-shield, #C9973F)" stroke-width="1.4" stroke-linecap="round" opacity=".75"/>
-    </g>
+  <symbol id="elmo" viewBox="12 -1 40 65">
+    <path d="M32 25.4 27 23.8l-2.6-2.4-3.2.6 1.6-3.2-3.2-1.4 2.7-2.1-2.3-3 3.2-1-1.2-3.6 3.2.4.4-4.1 2.7 1.8 1.6-4.4L32 4.2l2.1-3.4 1.6 4.4 2.7-1.8.4 4.1 3.2-.4-1.2 3.6 3.2 1-2.3 3 2.7 2.1-3.2 1.4 1.6 3.2-3.2-.6-2.6 2.4Z" fill="var(--emb-plume, #D2352B)" stroke="var(--emb-ink, #151B27)" stroke-width="1.1" stroke-linejoin="round"/>
+    <path d="M28.6 23.4c-2.2-3.4-3.4-7.8-3-12.6M35.4 23.4c2.2-3.4 3.4-7.8 3-12.6M27.2 22.4c-3-1.6-4.4-3.8-4.6-6M36.8 22.4c3-1.6 4.4-3.8 4.6-6" fill="none" stroke="var(--emb-plume-hi, #F27A6E)" stroke-width="1.1" stroke-linecap="round"/>
+    <path d="M29.4 6.6H32V25h-2.6Z" fill="var(--emb-steel-hi, #D9DEE5)"/>
+    <path d="M32 6.6h2.6V25H32Z" fill="var(--emb-steel-lo, #8E97A4)"/>
+    <path d="M29.4 6.6h5.2V25h-5.2Z" fill="none" stroke="var(--emb-ink, #151B27)" stroke-width="1.2" stroke-linejoin="round"/>
+    <path d="M32 23c-8.2 0-14.8 5-15.4 11.4l-.6 10.8c-.2 3.8.3 7.4 1.3 10.4l7.4 6.6.8-4.2H32Z" fill="var(--emb-steel-hi, #D9DEE5)"/>
+    <path d="M32 23c8.2 0 14.8 5 15.4 11.4l.6 10.8c.2 3.8-.3 7.4-1.3 10.4l-7.4 6.6-.8-4.2H32Z" fill="var(--emb-steel-lo, #8E97A4)"/>
+    <path d="M32 23c-8.2 0-14.8 5-15.4 11.4l-.6 10.8c-.2 3.8.3 7.4 1.3 10.4l7.4 6.6.8-4.2h13.6l.8 4.2 7.4-6.6c1-3 1.5-6.6 1.3-10.4l-.6-10.8C46.8 28 40.2 23 32 23Z" fill="none" stroke="var(--emb-ink, #151B27)" stroke-width="1.4" stroke-linejoin="round"/>
+    <path d="M32 23.8v12.4" stroke="var(--emb-ink, #151B27)" stroke-width="1" opacity=".5"/>
+    <path d="M17.4 33.8c4.4-2.6 9.6-3.6 14.6-3.6s10.2 1 14.6 3.6" fill="none" stroke="var(--emb-ink, #151B27)" stroke-width="1" opacity=".4"/>
+    <path d="M29.4 36.4l-10 1.2 1.9 5 5.4.8-1.5 14.6h13.6l-1.5-14.6 5.4-.8 1.9-5-10-1.2v10.8L32 53l-2.6-5.8Z" fill="var(--emb-ink, #151B27)" stroke="var(--emb-ink, #151B27)" stroke-width="1" stroke-linejoin="round"/>
+    <circle cx="17.9" cy="39" r="1" fill="var(--emb-ink, #151B27)"/>
+    <circle cx="46.1" cy="39" r="1" fill="var(--emb-ink, #151B27)"/>
   </symbol>
 </svg>
 <header class="top">
   <div class="wrap">
     <div class="brand"><svg class="emblem" aria-hidden="true"><use href="#elmo"/></svg><div class="brand-txt"><h1 id="projName">Obra da Casa</h1><span id="projSub">Serviços</span></div></div>
     <span class="saving" id="saving" aria-live="polite"></span>
-    <button class="btn owner" id="ownerBtn" data-act="owner"></button>
+    <button class="btn owner" id="ownerBtn" data-act="who-set"></button>
     <button class="btn bronze" data-act="new"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>Novo<span class="btn-label-long"> serviço</span></span></button>
   </div>
 </header>
-<div class="demo" id="demoBar" hidden><div class="wrap">Prévia com exemplos. Nada aqui é salvo e as sugestões são simuladas. PIN de teste para aprovar: <b>1234</b>.</div></div>
+<div class="demo" id="demoBar" hidden><div class="wrap">Prévia com exemplos. Nada aqui é salvo e as sugestões são simuladas. PIN de teste para apagar: <b>1234</b>.</div></div>
 
 <main class="wrap">
   <section class="hero" aria-label="Resumo da obra">
@@ -443,6 +469,7 @@ main.wrap { padding-block: 0 56px; }
   <div class="bar">
     <div class="tabs" role="group" aria-label="Visualização">
       <button data-act="view" data-view="lista" id="tabLista"><svg class="i" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Serviços</button>
+      <button data-act="view" data-view="registro" id="tabLog"><svg class="i" viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg>Registro</button>
       <button data-act="view" data-view="calendario" id="tabCal"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Calendário</button>
     </div>
     <div class="chips" id="filters"></div>
@@ -566,7 +593,7 @@ function applyConfig(d) {
   state.hasClaude = !!d.hasClaude; state.hasTranscription = !!d.hasTranscription; state.autoSuggest = d.autoSuggest !== false;
   if (d.dono) CONFIG.DONO = d.dono; if (d.prestador) CONFIG.PRESTADOR = d.prestador;
 }
-function actor() { return isOwner() ? CONFIG.DONO : (LS.get('obra.who') || CONFIG.PRESTADOR); }
+function actor() { return eu() || LS.get('obra.who') || CONFIG.PRESTADOR; }
 function load() {
   return call('list').then(function (d) {
     applyConfig(d);
@@ -590,20 +617,21 @@ function render() {
   renderOwner(); renderSummary(); renderFilters();
   $('#tabLista').setAttribute('aria-pressed', state.view === 'lista');
   $('#tabCal').setAttribute('aria-pressed', state.view === 'calendario');
-  $('#content').innerHTML = state.view === 'lista' ? listHTML() : calHTML();
+  $('#tabLog').setAttribute('aria-pressed', state.view === 'registro');
+  $('#content').innerHTML = state.view === 'lista' ? listHTML() : state.view === 'registro' ? logHTML() : calHTML();
   renderLayer();
 }
 document.addEventListener('focusout', function () {
   setTimeout(function () { if (state.dirty && !editing()) render(); }, 0);
 });
 
-function isOwner() { return !!state.pin; }
+function eu() { return LS.get('obra.eu') || ''; }
 function renderOwner() {
-  var b = $('#ownerBtn');
-  b.className = 'btn owner' + (isOwner() ? ' on' : '');
-  b.innerHTML = isOwner() ? ICON.unlock + '<span class="own-txt">Aprovação liberada</span>' : ICON.lock + '<span class="own-txt">Aprovar</span>';
-  b.setAttribute('aria-label', isOwner() ? 'Aprovação liberada neste aparelho' : 'Aprovar serviços com PIN');
-  b.title = isOwner() ? 'Aprovação liberada neste aparelho. Toque para bloquear.' : 'Digite seu PIN para aprovar serviços';
+  var b = $('#ownerBtn'), n = eu();
+  b.className = 'btn owner' + (n ? ' on' : '');
+  b.innerHTML = '<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span class="own-txt">' + (n ? esc(n) : 'Quem é você?') + '</span>';
+  b.setAttribute('aria-label', n ? 'Você está como ' + n + '. Toque para trocar.' : 'Informe seu nome');
+  b.title = n ? 'As aprovações deste aparelho ficam registradas em nome de ' + n + '. Toque para trocar.' : 'Informe seu nome para registrar aprovações';
 }
 
 function renderSummary() {
@@ -632,10 +660,23 @@ function renderFilters() {
 }
 
 function statusControl(it) {
-  if (!isOwner()) return '<button class="badge s-' + it.status + '" data-act="owner" title="Só o ' + esc(CONFIG.DONO) + ' aprova">' + STATUS[it.status] + '</button>';
-  return '<div class="seg" role="group" aria-label="Status">' + ['aprovado', 'aguardando', 'nao_aprovado'].map(function (s) {
+  return '<div class="seg" role="group" aria-label="Aprovação">' + ['aprovado', 'aguardando', 'nao_aprovado'].map(function (s) {
     return '<button class="s-' + s + (it.status === s ? ' on' : '') + '" data-act="status" data-id="' + it.id + '" data-status="' + s + '" aria-pressed="' + (it.status === s) + '">' + STATUS[s] + '</button>';
   }).join('') + '</div>';
+}
+var ACAO = { aprovado: 'Aprovado', nao_aprovado: 'Não aprovado', aguardando: 'Voltou para aguardando' };
+function quando(isoStr) {
+  var d = new Date(isoStr); if (isNaN(d)) return '';
+  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) + ' às ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+}
+function ultimoStatus(it) {
+  var h = (it.historico || []).filter(function (e) { return e.tipo === 'status'; });
+  return h.length ? h[h.length - 1] : null;
+}
+function quemAprovou(it) {
+  var e = ultimoStatus(it);
+  if (!e || e.para !== it.status || it.status === 'aguardando') return '';
+  return '<span class="by s-' + it.status + '-txt">' + (it.status === 'aprovado' ? 'Aprovado' : 'Não aprovado') + ' por <b>' + esc(e.por) + '</b> · ' + quando(e.em) + '</span>';
 }
 
 function materialCell(it, inDrawer) {
@@ -659,7 +700,7 @@ function listHTML() {
       '<div class="card-top">' +
         '<button class="svc" data-open="' + it.id + '"><span class="thumb">' + thumb + '</span><span class="os">' + osNum(it.numero) + '</span><span class="ttl">' + esc(it.titulo) + '</span>' +
           (it.descricao ? '<span class="desc">' + esc(it.descricao) + '</span>' : '') + (flags.length ? '<span class="flags">' + flags.join('') + '</span>' : '') + '</button>' +
-        '<div class="card-status">' + statusControl(it) + '</div>' +
+        '<div class="card-status">' + statusControl(it) + quemAprovou(it) + '</div>' +
       '</div>' +
       '<div class="fields">' +
         '<label class="cell money"><span class="lbl">Mão de obra</span><input class="in" inputmode="decimal" placeholder="0,00" data-id="' + it.id + '" data-f="maoDeObra" value="' + moneyIn(it.maoDeObra) + '"></label>' +
@@ -667,11 +708,24 @@ function listHTML() {
         '<div class="cell total-cell"><span class="lbl">Total</span><span class="total' + (it.total ? '' : ' zero') + '" data-calc="total" data-id="' + it.id + '">' + (it.total ? money(it.total) : 'sem valor') + '</span></div>' +
         '<label class="cell money"><span class="lbl">Valor cobrado</span><input class="in" inputmode="decimal" placeholder="0,00" data-id="' + it.id + '" data-f="valorCobrado" value="' + cobradoIn(it.valorCobrado) + '"></label>' +
         '<div class="cell dif-cell"><span class="lbl">Diferença</span><span class="dif' + (it.temCobrado ? '' : ' zero') + '" data-calc="dif" data-id="' + it.id + '">' + difHTML(it) + '</span></div>' +
-        '<label class="cell"><span class="lbl">Início</span><input class="in" type="date" data-id="' + it.id + '" data-f="inicio" value="' + esc(it.inicio) + '"></label>' +
-        '<label class="cell"><span class="lbl">Término</span><input class="in" type="date" data-id="' + it.id + '" data-f="termino" value="' + esc(it.termino) + '"' + (it.inicio ? ' min="' + esc(it.inicio) + '"' : '') + '></label>' +
+        '<label class="cell"><span class="lbl">Início <small class="opt">(opcional)</small></span><input class="in" type="date" data-id="' + it.id + '" data-f="inicio" value="' + esc(it.inicio) + '"></label>' +
+        '<label class="cell"><span class="lbl">Término <small class="opt">(opcional)</small></span><input class="in" type="date" data-id="' + it.id + '" data-f="termino" value="' + esc(it.termino) + '"' + (it.inicio ? ' min="' + esc(it.inicio) + '"' : '') + '></label>' +
       '</div>' +
     '</article>';
   }).join('') + '</div>';
+}
+
+/* ---------- Registro de aprovações ---------- */
+function logHTML() {
+  var ev = [];
+  state.items.forEach(function (it) { (it.historico || []).forEach(function (e) { ev.push({ e: e, it: it }); }); });
+  ev.sort(function (a, b) { return String(b.e.em).localeCompare(String(a.e.em)); });
+  var aprov = ev.filter(function (x) { return x.e.tipo === 'status'; });
+  if (!aprov.length) return '<div class="empty"><b>Nenhuma aprovação registrada</b><p>Quando alguém aprovar, recusar ou voltar um serviço para aguardando, aparece aqui com o nome e a hora.</p></div>';
+  return '<div class="log"><div class="log-head"><h2>Registro de aprovações</h2><span class="note">' + aprov.length + (aprov.length === 1 ? ' registro' : ' registros') + '</span></div>' +
+    '<ul class="hist log-list">' + aprov.map(function (x) {
+      return '<li>' + histLinha(x.e) + '<button class="log-os" data-open="' + x.it.id + '">' + osNum(x.it.numero) + ' · ' + esc(x.it.titulo) + '</button></li>';
+    }).join('') + '</ul></div>';
 }
 
 /* ---------- Calendário ---------- */
@@ -724,7 +778,7 @@ function renderLayer() {
   var it = state.openId && itemById(state.openId);
   if (it) html += '<div class="scrim" data-act="close"></div><aside class="drawer" role="dialog" aria-modal="true" aria-label="' + esc(it.titulo) + '">' + drawerHTML(it) + '</aside>';
   if (state.modal === 'new') html += '<div class="scrim modal-scrim" data-act="close-modal"></div><div class="modal" role="dialog" aria-modal="true" aria-label="Novo serviço">' + newHTML() + '</div>';
-  if (state.modal === 'pin') html += '<div class="scrim modal-scrim" data-act="close-modal"></div><div class="modal" role="dialog" aria-modal="true" aria-label="PIN">' + pinHTML() + '</div>';
+  if (state.modal === 'who') html += '<div class="scrim modal-scrim" data-act="close-modal"></div><div class="modal" role="dialog" aria-modal="true" aria-label="Quem é você">' + whoHTML() + '</div>';
   if (state.lightbox) html += '<div class="lightbox" data-act="close-lightbox"><img src="' + esc(state.lightbox) + '" alt="Foto ampliada"></div>';
   var layer = $('#layer');
   var scroll = layer.querySelector('.drawer') ? layer.querySelector('.drawer').scrollTop : 0;
@@ -781,12 +835,15 @@ function newHTML() {
     '<div class="m-foot"><button class="btn ghost" data-act="close-modal">Cancelar</button><button class="btn primary" data-act="create"' + (d.saving ? ' disabled' : '') + '>' + (d.saving ? 'Enviando…' : 'Enviar') + '</button></div>';
 }
 
-function pinHTML() {
-  return '<div class="m-head"><h2>Aprovação</h2><button class="icon-btn" data-act="close-modal" aria-label="Fechar">' + ICON.x + '</button></div>' +
-    '<div class="m-body"><p class="note" style="margin:0">Digite o PIN do ' + esc(CONFIG.DONO) + ' para aprovar ou recusar serviços neste aparelho.</p>' +
-    '<input class="in pin-in" id="pinIn" inputmode="numeric" autocomplete="off" maxlength="8" aria-label="PIN">' +
-    '<p class="warn" id="pinErr" style="margin:0" hidden>PIN incorreto. Confira e tente de novo.</p></div>' +
-    '<div class="m-foot"><button class="btn ghost" data-act="close-modal">Cancelar</button><button class="btn primary" data-act="pin-ok">Liberar aprovação</button></div>';
+function whoHTML() {
+  var atual = eu();
+  return '<div class="m-head"><h2>Quem é você?</h2><button class="icon-btn" data-act="close-modal" aria-label="Fechar">' + ICON.x + '</button></div>' +
+    '<div class="m-body"><p class="note" style="margin:0">Seu nome fica no registro de cada aprovação feita neste aparelho.</p>' +
+    '<div class="who-pick">' + [CONFIG.DONO, CONFIG.PRESTADOR].map(function (n) {
+      return '<button class="btn' + (atual === n ? ' primary' : '') + '" data-act="who-pick" data-name="' + esc(n) + '">' + esc(n) + '</button>';
+    }).join('') + '</div>' +
+    '<label class="field"><span>Ou digite outro nome</span><input class="in" id="whoIn" maxlength="40" autocomplete="name" value="' + esc(atual && atual !== CONFIG.DONO && atual !== CONFIG.PRESTADOR ? atual : '') + '"></label></div>' +
+    '<div class="m-foot"><button class="btn ghost" data-act="close-modal">Cancelar</button><button class="btn primary" data-act="who-ok">' + (state.pendingStatus ? 'Confirmar e registrar' : 'Salvar nome') + '</button></div>';
 }
 
 function drawerHTML(it) {
@@ -848,18 +905,28 @@ function drawerHTML(it) {
 
   /* Datas */
   h += '<section class="sec"><h3>Execução prevista</h3><div class="grid2">' +
-    '<label class="field"><span>Início</span><input class="in" type="date" id="d-ini" data-id="' + it.id + '" data-f="inicio" value="' + esc(it.inicio) + '"></label>' +
-    '<label class="field"><span>Término</span><input class="in" type="date" id="d-fim" data-id="' + it.id + '" data-f="termino" value="' + esc(it.termino) + '"' + (it.inicio ? ' min="' + esc(it.inicio) + '"' : '') + '></label></div>' +
+    '<label class="field"><span>Início <small class="opt">(opcional)</small></span><input class="in" type="date" id="d-ini" data-id="' + it.id + '" data-f="inicio" value="' + esc(it.inicio) + '"></label>' +
+    '<label class="field"><span>Término <small class="opt">(opcional)</small></span><input class="in" type="date" id="d-fim" data-id="' + it.id + '" data-f="termino" value="' + esc(it.termino) + '"' + (it.inicio ? ' min="' + esc(it.inicio) + '"' : '') + '></label></div>' +
     '<label class="field"><span>Observações</span><textarea class="in" id="d-obs" data-id="' + it.id + '" data-f="observacoes" placeholder="Combinados, dúvidas, horário de acesso…">' + esc(it.observacoes) + '</textarea></label></section>';
 
   /* Aprovação */
+  var hist = (it.historico || []).slice().reverse();
   h += '<section class="sec"><div class="sec-title"><h3>Aprovação</h3></div>' + statusControl(it) +
-    (isOwner() ? (state.confirmDel
-      ? '<div class="confirm">Apagar ' + osNum(it.numero) + ' com fotos e áudios? Não dá para desfazer.<div class="actions"><button class="btn small danger" data-act="del-go">Apagar serviço</button><button class="btn small" data-act="del-cancel">Cancelar</button></div></div>'
-      : '<div class="actions"><button class="btn small ghost danger" data-act="del-ask">' + ICON.trash + 'Apagar serviço</button></div>')
-      : '<p class="note" style="margin:0">A aprovação é feita com PIN.</p>') + '</section>';
+    (eu() ? '<p class="note" style="margin:0">Fica registrado em nome de <b>' + esc(eu()) + '</b>. <button class="linkbtn" data-act="who-set">Trocar</button></p>' : '<p class="note" style="margin:0">Ao aprovar, pedimos seu nome para o registro.</p>') +
+    (hist.length ? '<ul class="hist">' + hist.map(function (e) { return '<li>' + histLinha(e) + '</li>'; }).join('') + '</ul>' : '') +
+    (state.confirmDel
+      ? '<div class="confirm">Apagar ' + osNum(it.numero) + ' com fotos e áudios? Não dá para desfazer. Digite o PIN do proprietário:' +
+        '<input class="in pin-in" id="delPin" inputmode="numeric" autocomplete="off" maxlength="8" aria-label="PIN para apagar">' +
+        '<div class="actions"><button class="btn small danger" data-act="del-go">Apagar serviço</button><button class="btn small" data-act="del-cancel">Cancelar</button></div></div>'
+      : '<div class="actions"><button class="btn small ghost danger" data-act="del-ask">' + ICON.trash + 'Apagar serviço</button></div>') + '</section>';
   return h + '</div>' +
     '<div class="d-foot"><button class="btn" data-act="back">' + ICON.left + 'Voltar</button><button class="btn primary" data-act="save-close"' + (state.closing ? ' disabled' : '') + '>' + (state.closing ? '<span class="spin"></span>Salvando…' : '<svg class="i" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Salvar') + '</button></div>';
+}
+
+function histLinha(e) {
+  var txt = e.tipo === 'criado' ? 'Cadastrado' : (ACAO[e.para] || e.para);
+  var cls = e.tipo === 'criado' ? 'h-new' : 'h-' + e.para;
+  return '<span class="hdot ' + cls + '"></span><span class="htxt"><b>' + esc(txt) + '</b>' + (e.por ? ' por ' + esc(e.por) : '') + '</span><span class="hwhen">' + quando(e.em) + '</span>';
 }
 
 function updateCalcs() {
@@ -953,12 +1020,22 @@ function mergeServer(srv) {
 
 function setStatus(id, s) {
   var it = itemById(id); if (!it || it.status === s) return;
-  var prev = it.status; it.status = s; render();
-  upd(id, 'setStatus', [id, s, state.pin]).catch(function (e) {
-    it.status = prev;
-    if (/PIN/.test(e.message)) { state.pin = null; LS.set('obra.pin', null); }
-    render();
+  if (!eu()) { state.pendingStatus = { id: id, s: s }; state.modal = 'who'; renderLayer(); return; }
+  var prev = it.status, por = eu();
+  it.status = s;
+  it.historico = (it.historico || []).concat([{ tipo: 'status', de: prev, para: s, por: por, em: new Date().toISOString() }]);
+  render();
+  upd(id, 'setStatus', [id, s, por]).then(function () { toast((ACAO[s] || s) + ' por ' + por + '.'); }).catch(function () {
+    it.status = prev; it.historico = it.historico.slice(0, -1); render();
   });
+}
+function salvarNome(n) {
+  n = String(n || '').trim().slice(0, 40);
+  if (!n) { toast('Escolha ou digite um nome.'); return; }
+  LS.set('obra.eu', n); LS.set('obra.who', n);
+  var p = state.pendingStatus; state.pendingStatus = null; state.modal = null;
+  render();
+  if (p) setStatus(p.id, p.s); else toast('Aprovações deste aparelho ficam em nome de ' + n + '.');
 }
 
 function requestSuggestion(id) {
@@ -967,7 +1044,7 @@ function requestSuggestion(id) {
     .catch(function (e) { delete state.sugBusy[id]; state.sugErr[id] = e.message; var it = itemById(id); if (it) it.sugestaoStatus = 'erro'; render(); });
 }
 
-function newDraft() { return { titulo: '', descricao: '', fotos: [], audios: [], criadoPor: LS.get('obra.who') || CONFIG.DONO, saving: false }; }
+function newDraft() { return { titulo: '', descricao: '', fotos: [], audios: [], criadoPor: eu() || LS.get('obra.who') || CONFIG.DONO, saving: false }; }
 function readDraftInputs() {
   if (!state.draft) return;
   var t = $('#n-titulo'), d = $('#n-desc');
@@ -1107,21 +1184,12 @@ document.addEventListener('click', function (e) {
     case 'close': case 'back': if (state.rec) stopRecording(); flushAll(); state.openId = null; render(); break;
     case 'save-close': saveAndClose(); break;
     case 'new': state.draft = newDraft(); state.modal = 'new'; renderLayer(); if (window.matchMedia && matchMedia('(hover: hover) and (pointer: fine)').matches) setTimeout(function () { var t = $('#n-titulo'); if (t) t.focus(); }, 30); break;
-    case 'close-modal': if (state.rec) { state.rec.rec.onstop = null; state.rec.stream.getTracks().forEach(function (t) { t.stop(); }); clearInterval(state.rec.timer); state.rec = null; } state.modal = null; state.draft = null; renderLayer(); break;
+    case 'close-modal': state.pendingStatus = null; if (state.rec) { state.rec.rec.onstop = null; state.rec.stream.getTracks().forEach(function (t) { t.stop(); }); clearInterval(state.rec.timer); state.rec = null; } state.modal = null; state.draft = null; renderLayer(); break;
     case 'who': readDraftInputs(); state.draft.criadoPor = b.getAttribute('data-who'); renderLayer(); break;
     case 'create': createService(); break;
-    case 'owner':
-      if (isOwner() && b.id === 'ownerBtn') { state.pin = null; LS.set('obra.pin', null); render(); toast('Aprovação bloqueada neste aparelho.'); }
-      else if (!isOwner()) { state.modal = 'pin'; renderLayer(); setTimeout(function () { var p = $('#pinIn'); if (p) p.focus(); }, 30); }
-      break;
-    case 'pin-ok': {
-      var pin = ($('#pinIn').value || '').trim();
-      call('checkPin', pin).then(function (ok) {
-        if (!ok) { $('#pinErr').hidden = false; return; }
-        state.pin = pin; LS.set('obra.pin', pin); state.modal = null; render(); toast('Aprovação liberada neste aparelho.');
-      }).catch(function (err) { toast(err.message); });
-      break;
-    }
+    case 'who-set': state.pendingStatus = null; state.modal = 'who'; renderLayer(); break;
+    case 'who-pick': salvarNome(b.getAttribute('data-name')); break;
+    case 'who-ok': salvarNome(($('#whoIn') || {}).value); break;
     case 'status': setStatus(b.getAttribute('data-id'), b.getAttribute('data-status')); break;
     case 'sug-ask': state.confirmSug = true; renderLayer(); break;
     case 'sug-cancel': state.confirmSug = false; renderLayer(); break;
@@ -1158,9 +1226,15 @@ document.addEventListener('click', function (e) {
     case 'del-ask': state.confirmDel = true; renderLayer(); break;
     case 'del-cancel': state.confirmDel = false; renderLayer(); break;
     case 'del-go': if (it) {
-      var id = it.id; state.openId = null; state.confirmDel = false;
-      state.items = state.items.filter(function (x) { return x.id !== id; }); render();
-      tracked(call('remove', id, state.pin)).catch(function () { load(); });
+      var id = it.id, pin = (($('#delPin') || {}).value || '').trim();
+      if (!pin) { toast('Digite o PIN para apagar.'); break; }
+      b.disabled = true;
+      call('checkPin', pin).then(function (ok) {
+        if (!ok) { b.disabled = false; toast('PIN incorreto.'); return; }
+        state.openId = null; state.confirmDel = false;
+        state.items = state.items.filter(function (x) { return x.id !== id; }); render();
+        tracked(call('remove', id, pin)).catch(function () { load(); });
+      }).catch(function (e) { b.disabled = false; toast(e.message); });
     } break;
     case 'cal-prev': state.month = new Date(state.month.getFullYear(), state.month.getMonth() - 1, 1); render(); break;
     case 'cal-next': state.month = new Date(state.month.getFullYear(), state.month.getMonth() + 1, 1); render(); break;
@@ -1189,7 +1263,7 @@ document.addEventListener('keydown', function (e) {
     else if (state.modal) { $('[data-act="close-modal"]').click(); }
     else if (state.openId) { flushAll(); state.openId = null; render(); }
   }
-  if (e.key === 'Enter' && e.target.id === 'pinIn') $('[data-act="pin-ok"]').click();
+  if (e.key === 'Enter' && e.target.id === 'whoIn') $('[data-act="who-ok"]').click();
   if (e.key === 'Enter' && e.target.matches('input.in[data-f], input.in[data-m]')) e.target.blur();
 });
 
@@ -1275,7 +1349,11 @@ var Demo = (function () {
         fotos: [], audios: [], sugestao: null, sugestaoStatus: '', materiais: []
       }
     ];
-    items.forEach(function (x) { x.atualizadoEm = x.criadoEm; computeTotals(x); });
+    items.forEach(function (x) {
+      x.atualizadoEm = x.criadoEm; x.historico = [{ tipo: 'criado', por: x.criadoPor, em: x.criadoEm }];
+      if (x.status !== 'aguardando') x.historico.push({ tipo: 'status', de: 'aguardando', para: x.status, por: 'Carlos', em: addDays(new Date(x.criadoEm), 1).toISOString() });
+      computeTotals(x);
+    });
   }
   var clone = function (x) { return JSON.parse(JSON.stringify(x)); };
   var find = function (id) { for (var i = 0; i < items.length; i++) if (items[i].id === id) return items[i]; throw new Error('Este serviço foi apagado.'); };
@@ -1294,7 +1372,7 @@ var Demo = (function () {
     removeAudio: function (id, fid) { var it = find(id); it.audios = it.audios.filter(function (a) { return a.id !== fid; }); return clone(it); },
     getAudio: function () { throw new Error('Áudio indisponível na prévia.'); },
     checkPin: function (p) { return p === pin; },
-    setStatus: function (id, s, p) { if (p !== pin) throw new Error('PIN incorreto.'); var it = find(id); it.status = s; return clone(it); },
+    setStatus: function (id, s, por) { var it = find(id); if (it.status !== s) { it.historico = (it.historico || []).concat([{ tipo: 'status', de: it.status, para: s, por: por, em: new Date().toISOString() }]); it.status = s; } return clone(it); },
     remove: function (id, p) { if (p !== pin) throw new Error('PIN incorreto.'); items = items.filter(function (x) { return x.id !== id; }); return true; },
     suggest: function (id) {
       var it = find(id);

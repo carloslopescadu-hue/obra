@@ -21,9 +21,9 @@ const HEADERS = [
   'id', 'numero', 'criadoEm', 'atualizadoEm', 'criadoPor', 'titulo', 'descricao',
   'maoDeObra', 'materialManual', 'materialTotal', 'total', 'inicio', 'termino',
   'status', 'observacoes', 'fotos', 'audios', 'materiais', 'sugestao', 'sugestaoStatus',
-  'tituloAuto', 'avisos', 'valorCobrado', 'diferenca'
+  'tituloAuto', 'avisos', 'valorCobrado', 'diferenca', 'historico'
 ];
-const JSON_FIELDS = ['fotos', 'audios', 'materiais', 'sugestao', 'avisos'];
+const JSON_FIELDS = ['fotos', 'audios', 'materiais', 'sugestao', 'avisos', 'historico'];
 const EDITABLE = ['titulo', 'descricao', 'maoDeObra', 'materialManual', 'valorCobrado', 'inicio', 'termino', 'observacoes', 'materiais'];
 const VALUE_FIELDS = ['maoDeObra', 'materialManual', 'valorCobrado', 'materiais'];
 const STATUSES = ['aguardando', 'aprovado', 'nao_aprovado'];
@@ -78,7 +78,7 @@ const ROUTES = {
         maoDeObra: 0, materialManual: 0, materialTotal: 0, total: 0, valorCobrado: '', diferenca: 0,
         inicio: '', termino: '', status: 'aguardando', observacoes: '',
         fotos: [], audios: [], materiais: [], sugestao: null, sugestaoStatus: '',
-        avisos: { novo: now }
+        avisos: { novo: now }, historico: [{ tipo: 'criado', por: clean_(fields.criadoPor, 40), em: now }]
       };
       sheet_().appendRow(itemToRow_(it));
       return it;
@@ -139,12 +139,35 @@ const ROUTES = {
     return 'data:' + blob.getContentType() + ';base64,' + Utilities.base64Encode(blob.getBytes());
   },
   checkPin: function (pin) { return checkPin_(pin); },
-  setStatus: function (id, status, pin) {
-    if (!checkPin_(pin)) throw new Error('PIN incorreto.');
+  /** Qualquer pessoa pode aprovar; cada mudança fica no histórico com o nome de quem fez. */
+  setStatus: function (id, status, por) {
     if (STATUSES.indexOf(status) === -1) throw new Error('Status inválido.');
-    const it = mutate_(id, function (x) { x.status = status; });
-    try { avisoStatus_(it); } catch (e) { Logger.log('Aviso de status falhou: ' + e.message); }
+    const nome = clean_(por, 40);
+    if (!nome) throw new Error('Informe seu nome para registrar a aprovação.');
+    let mudou = false;
+    const it = mutate_(id, function (x) {
+      if (x.status === status) return;
+      x.historico.push({ tipo: 'status', de: x.status, para: status, por: nome, em: new Date().toISOString() });
+      if (x.historico.length > 100) x.historico = x.historico.slice(-100);
+      x.status = status; mudou = true;
+    });
+    if (mudou) { try { avisoStatus_(it, nome); } catch (e) { Logger.log('Aviso de status falhou: ' + e.message); } }
     return it;
+  },
+  /** Ajuste em lote pedido pelo dono: limpa datas e volta todos para "aguardando". Exige PIN. */
+  resetAll: function (pin, por) {
+    if (!checkPin_(pin)) throw new Error('PIN incorreto.');
+    const nome = clean_(por, 40) || nomeDono_();
+    readAll_().forEach(function (item) {
+      mutate_(item.id, function (x) {
+        x.inicio = ''; x.termino = '';
+        if (x.status !== 'aguardando') {
+          x.historico.push({ tipo: 'status', de: x.status, para: 'aguardando', por: nome + ' (ajuste geral)', em: new Date().toISOString() });
+          x.status = 'aguardando';
+        }
+      });
+    });
+    return readAll_();
   },
   remove: function (id, pin) {
     if (!checkPin_(pin)) throw new Error('PIN incorreto.');
@@ -301,9 +324,10 @@ function avisoOrcamento_(it) {
   sendMail_(emailDono_(), 'Orçamento atualizado: ' + osNum_(it) + ' · ' + it.titulo,
     nomePrestador_() + ' preencheu ou alterou o orçamento.', it, 'Abra para conferir e aprovar.');
 }
-function avisoStatus_(it) {
-  sendMail_(emailPrestador_(), STATUS_LABEL[it.status] + ': ' + osNum_(it) + ' · ' + it.titulo,
-    nomeDono_() + ' marcou este serviço como "' + STATUS_LABEL[it.status] + '".', it,
+function avisoStatus_(it, por) {
+  const para = por === nomePrestador_() ? emailDono_() : emailPrestador_();
+  sendMail_(para, STATUS_LABEL[it.status] + ': ' + osNum_(it) + ' · ' + it.titulo,
+    (por || nomeDono_()) + ' marcou este serviço como "' + STATUS_LABEL[it.status] + '".', it,
     it.status === 'aprovado' ? 'Pode programar a execução nas datas combinadas.' : 'Abra para ver os detalhes.');
 }
 function sendMail_(to, subject, intro, it, cta) {
@@ -438,7 +462,7 @@ function rowToItem_(row) {
     }
     it[h] = v;
   });
-  it.fotos = it.fotos || []; it.audios = it.audios || []; it.materiais = it.materiais || []; it.avisos = it.avisos || {};
+  it.fotos = it.fotos || []; it.audios = it.audios || []; it.materiais = it.materiais || []; it.avisos = it.avisos || {}; it.historico = it.historico || [];
   ['numero', 'maoDeObra', 'materialManual', 'materialTotal', 'total', 'diferenca'].forEach(function (k) { it[k] = num_(it[k]); });
   it.valorCobrado = (it.valorCobrado === '' || it.valorCobrado == null) ? '' : num_(it.valorCobrado);
   it.tituloAuto = it.tituloAuto === true || String(it.tituloAuto).toLowerCase() === 'true';
