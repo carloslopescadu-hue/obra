@@ -18,7 +18,8 @@
   --ink: #131824;
   --muted: #5D6577;
   --line: #E0E3EA;
-  --accent: #A97A24;          /* bronze */
+  --accent: #A97A24;          /* bronze: ícones, bordas, foco */
+  --accent-text: #7E5A14;     /* bronze para texto: ≥ 4,5:1 no branco e no bege */
   --accent-soft: #F5ECDB;
   --accent-ink: #FFFFFF;
   --hero: #151B27;            /* aço */
@@ -43,7 +44,7 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #0C0F15; --surface: #151A23; --surface-2: #1B212C; --ink: #E8EBF1; --muted: #98A1B2; --line: #262D39;
-    --accent: #D8A94C; --accent-soft: #2E2615; --accent-ink: #141414;
+    --accent: #D8A94C; --accent-text: #D8A94C; --accent-soft: #2E2615; --accent-ink: #141414;
     --hero: #121722; --hero-2: #1A2130; --hero-ink: #EEF1F6; --hero-muted: #9AA3B5; --hero-accent: #E2B55A;
     --primary: #E8EBF1; --primary-ink: #11151D; --link: #E8EBF1;
     --ok: #6FD39C; --ok-bg: #14301F; --wait: #F0C46A; --wait-bg: #352A10; --no: #F48C83; --no-bg: #3A1A18;
@@ -54,7 +55,7 @@
 }
 :root[data-theme="dark"] {
   --bg: #0C0F15; --surface: #151A23; --surface-2: #1B212C; --ink: #E8EBF1; --muted: #98A1B2; --line: #262D39;
-  --accent: #D8A94C; --accent-soft: #2E2615; --accent-ink: #141414;
+  --accent: #D8A94C; --accent-text: #D8A94C; --accent-soft: #2E2615; --accent-ink: #141414;
   --hero: #121722; --hero-2: #1A2130; --hero-ink: #EEF1F6; --hero-muted: #9AA3B5; --hero-accent: #E2B55A;
   --primary: #E8EBF1; --primary-ink: #11151D; --link: #E8EBF1;
   --ok: #6FD39C; --ok-bg: #14301F; --wait: #F0C46A; --wait-bg: #352A10; --no: #F48C83; --no-bg: #3A1A18;
@@ -163,7 +164,7 @@ svg.i { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none;
 @media (max-width: 560px) {
   .bar { flex-direction: column; align-items: stretch; }
   .tabs { width: 100%; } .tabs button { flex: 1; justify-content: center; padding: 8px 6px; font-size: 14px; }
-  .chips { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+  .chips { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; min-width: 0; max-width: 100%; }
   .chips::-webkit-scrollbar { display: none; }
   .chip { flex: none; }
 }
@@ -190,14 +191,14 @@ svg.i { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none;
 .svc > :not(.thumb) { grid-column: 2; }
 .thumb { grid-row: 1 / span 4; width: 64px; height: 64px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line); display: grid; place-items: center; color: var(--muted); overflow: hidden; }
 .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.os { font-size: 11.5px; color: var(--accent); font-weight: 800; letter-spacing: .1em; font-variant-numeric: tabular-nums; }
+.os { font-size: 11.5px; color: var(--accent-text); font-weight: 800; letter-spacing: .1em; font-variant-numeric: tabular-nums; }
 .ttl { font-family: var(--display); font-stretch: 100%; font-weight: 700; font-size: 17px; line-height: 1.25; color: var(--link); text-wrap: balance; }
 .svc:hover .ttl { text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 3px; }
 .desc { color: var(--muted); font-size: 13.5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .flags { display: flex; gap: 12px; font-size: 12px; color: var(--muted); flex-wrap: wrap; margin-top: 2px; }
 .flags span { display: inline-flex; align-items: center; gap: 4px; }
 .flags svg.i { width: 14px; height: 14px; }
-.flags .ready { color: var(--accent); font-weight: 700; }
+.flags .ready { color: var(--accent-text); font-weight: 700; }
 .card-status { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
 .by { font-size: 12.5px; color: var(--muted); }
 .by b { color: var(--ink); font-weight: 700; }
@@ -221,7 +222,7 @@ svg.i { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none;
 .calc { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; padding: 9px 0; line-height: 1.2; }
 .calc small { display: block; font-weight: 500; font-size: 11px; color: var(--muted); }
 .total-cell { background: var(--accent-soft); border-radius: var(--r-sm); padding: 7px 12px; align-self: stretch; justify-content: center; }
-.total-cell .lbl { color: var(--accent); }
+.total-cell .lbl { color: var(--accent-text); }
 .total { font-family: var(--display); font-weight: 800; font-size: 18px; font-variant-numeric: tabular-nums; line-height: 1.2; }
 .total.zero { color: var(--muted); font-family: var(--font); font-weight: 600; font-size: 13.5px; }
 .empty { background: var(--surface); border: 1px dashed var(--line); border-radius: var(--r); padding: 44px 20px; text-align: center; color: var(--muted); display: grid; justify-items: center; gap: 6px; }
@@ -314,11 +315,11 @@ textarea.in { resize: vertical; min-height: 80px; line-height: 1.5; }
 .recbar i { display: block; height: 100%; background: var(--rec); width: 0; }
 .note { font-size: 13px; color: var(--muted); }
 .warn { font-size: 13px; color: var(--no); }
-.sug-tag { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 700; color: var(--accent); background: var(--accent-soft); padding: 4px 10px; border-radius: 999px; }
+.sug-tag { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 700; color: var(--accent-text); background: var(--accent-soft); padding: 4px 10px; border-radius: 999px; }
 .sug p { margin: 0; }
 .steps { list-style: none; margin: 0; padding: 0; display: grid; counter-reset: s; }
 .steps li { counter-increment: s; display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 2px 12px; padding: 11px 0; border-top: 1px solid var(--line); }
-.steps li::before { content: counter(s); grid-row: span 2; width: 28px; height: 28px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; font-weight: 800; font-size: 13px; font-variant-numeric: tabular-nums; }
+.steps li::before { content: counter(s); grid-row: span 2; width: 28px; height: 28px; border-radius: 50%; background: var(--accent-soft); color: var(--accent-text); display: grid; place-items: center; font-weight: 800; font-size: 13px; font-variant-numeric: tabular-nums; }
 .steps b { font-size: 15px; }
 .steps span { color: var(--muted); font-size: 14px; }
 .cares { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: 14px; }
@@ -334,7 +335,7 @@ textarea.in { resize: vertical; min-height: 80px; line-height: 1.5; }
 .mname { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .mname b { font-weight: 700; font-size: 14px; }
 .mname small { color: var(--muted); font-size: 12px; }
-.tag { font-size: 11px; color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line)); border-radius: 999px; padding: 0 7px; align-self: flex-start; font-weight: 700; }
+.tag { font-size: 11px; color: var(--accent-text); border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line)); border-radius: 999px; padding: 0 7px; align-self: flex-start; font-weight: 700; }
 .icon-btn { width: 34px; height: 34px; border-radius: 999px; border: 0; background: transparent; color: var(--muted); display: grid; place-items: center; padding: 0; }
 .icon-btn:hover { background: var(--surface-2); color: var(--no); }
 .mat-sum { display: flex; justify-content: space-between; gap: 10px; font-size: 14px; padding-top: 10px; border-top: 1px solid var(--line); }
@@ -350,7 +351,7 @@ textarea.in { resize: vertical; min-height: 80px; line-height: 1.5; }
 .field { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
 .field > span { font-size: 12.5px; color: var(--muted); font-weight: 700; }
 .bigtotal { display: flex; justify-content: space-between; align-items: baseline; background: var(--accent-soft); border-radius: 12px; padding: 12px 14px; }
-.bigtotal span { font-weight: 700; color: var(--accent); font-size: 14px; }
+.bigtotal span { font-weight: 700; color: var(--accent-text); font-size: 14px; }
 .bigtotal b { font-family: var(--display); font-size: 26px; font-weight: 800; font-variant-numeric: tabular-nums; }
 .hist { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; border-top: 1px solid var(--line); }
 .hist li { display: flex; align-items: baseline; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
@@ -359,7 +360,7 @@ textarea.in { resize: vertical; min-height: 80px; line-height: 1.5; }
 .h-aprovado { background: var(--ok); } .h-nao_aprovado { background: var(--no); } .h-aguardando { background: var(--wait); } .h-new { background: var(--accent); }
 .htxt { flex: 1; min-width: 0; }
 .hwhen { color: var(--muted); font-size: 12.5px; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.linkbtn { border: 0; background: none; padding: 0; color: var(--accent); font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
+.linkbtn { border: 0; background: none; padding: 0; color: var(--accent-text); font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
 .from-list { font-size: 12.5px; color: var(--ok); }
 .bigdif { display: flex; justify-content: space-between; align-items: baseline; background: var(--ok-bg); border-radius: 12px; padding: 12px 14px; }
 .bigdif span { font-weight: 700; color: var(--ok); font-size: 14px; }
@@ -396,6 +397,15 @@ textarea.in { resize: vertical; min-height: 80px; line-height: 1.5; }
 .pin-in { font-size: 26px; letter-spacing: .4em; text-align: center; font-variant-numeric: tabular-nums; }
 .lightbox { position: fixed; inset: 0; z-index: 60; background: rgb(0 0 0 / .9); display: grid; place-items: center; padding: 16px; }
 .lightbox img { max-width: 100%; max-height: 100%; border-radius: 10px; }
+.in.unsaved { border-color: var(--wait); box-shadow: 0 0 0 2px color-mix(in srgb, var(--wait) 35%, transparent); }
+.in[aria-invalid="true"] { border-color: var(--no); box-shadow: 0 0 0 2px color-mix(in srgb, var(--no) 35%, transparent); }
+.saving.warn { color: var(--wait); font-weight: 700; }
+.saving.warn button { margin-left: 6px; border: 0; background: none; color: inherit; font: inherit; text-decoration: underline; padding: 0; cursor: pointer; }
+.toast-act { margin-left: 12px; border: 0; background: none; color: var(--hero-accent); font: inherit; font-weight: 800; text-decoration: underline; text-underline-offset: 2px; padding: 4px 2px; cursor: pointer; }
+.help { margin: 2px 0 0; font-size: 12.5px; color: var(--muted); }
+.appr-total { font-size: 15px; }
+#apprBox { scroll-margin-bottom: 96px; }
+.hdot.h-valor { background: var(--accent); }
 .toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--hero); color: var(--hero-ink); padding: 11px 18px; border-radius: 999px; font-size: 14px; font-weight: 600; z-index: 70; max-width: calc(100% - 32px); box-shadow: var(--shadow-lg); }
 main.wrap { padding-block: 0 56px; }
 .fab { display: none; }
@@ -447,7 +457,7 @@ main.wrap { padding-block: 0 56px; }
     <button class="btn bronze" data-act="new"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>Novo<span class="btn-label-long"> serviço</span></span></button>
   </div>
 </header>
-<div class="demo" id="demoBar" hidden><div class="wrap">Prévia com exemplos. Nada aqui é salvo e as sugestões são simuladas. PIN de teste para apagar: <b>1234</b>.</div></div>
+<div class="demo" id="demoBar" hidden><div class="wrap">Prévia com exemplos. Nada aqui é salvo e as sugestões são simuladas. PIN de teste (aprovar, recusar e apagar): <b>1234</b>.</div></div>
 
 <main class="wrap">
   <section class="hero" aria-label="Resumo da obra">
@@ -505,12 +515,19 @@ var LS = {
 };
 var BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
 var NUM = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+/* Número em formato brasileiro: "1.500" = 1500, "1.500,50" = 1500,50, "12,5" = 12,50. */
 function num(v) {
   if (typeof v === 'number') return isFinite(v) ? v : 0;
   var s = String(v == null ? '' : v).replace(/[^\d,.\-]/g, '');
   if (s.indexOf(',') !== -1) s = s.replace(/\./g, '').replace(',', '.');
+  else if (/^-?\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, '');
   var n = parseFloat(s);
   return isFinite(n) ? Math.round(n * 100) / 100 : 0;
+}
+/* Valor digitado é aceitável? Vazio é aceito; letras ou símbolos soltos não. */
+function moneyOk(raw) {
+  var t = String(raw == null ? '' : raw).replace(/\s|R\$/gi, '');
+  return t === '' || /^-?[\d.]*,?\d*$/.test(t) && /\d/.test(t) || /^-?\d+\.\d{1,2}$/.test(t);
 }
 function money(n) { return BRL.format(num(n)); }
 function moneyIn(n) { n = num(n); return n ? NUM.format(n) : ''; }
@@ -569,23 +586,74 @@ function setItem(it) {
 
 /* ===================== Servidor ===================== */
 var MODE = (window.google && google.script && google.script.run) ? 'gas' : (CONFIG.API_URL ? 'http' : 'demo');
+/* Link pessoal de acesso: ...#k=CODIGO. O código fica guardado neste aparelho e sai da barra de endereço. */
+(function () {
+  var m = /(?:^#|&)k=([\w-]{16,})/.exec(location.hash || '');
+  if (!m) return;
+  LS.set('obra.k', m[1]);
+  var resto = location.hash.replace(/(^#|&)k=[\w-]+/, '').replace(/^#&/, '#');
+  try { history.replaceState(null, '', location.pathname + location.search + (resto === '#' ? '' : resto)); } catch (e) {}
+})();
 function call(action) {
-  var args = Array.prototype.slice.call(arguments, 1);
+  var args = Array.prototype.slice.call(arguments, 1), token = LS.get('obra.k') || '';
   if (MODE === 'gas') return new Promise(function (res, rej) {
-    google.script.run.withSuccessHandler(res).withFailureHandler(function (e) { rej(new Error(e && e.message || String(e))); }).api(action, args);
+    google.script.run.withSuccessHandler(res).withFailureHandler(function (e) { rej(new Error(e && e.message || String(e))); }).api(action, args, token);
   });
-  if (MODE === 'http') return fetch(CONFIG.API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: action, args: args }) })
+  if (MODE === 'http') return fetch(CONFIG.API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: action, args: args, token: token }) })
     .then(function (r) { return r.json(); }).then(function (j) { if (!j.ok) throw new Error(j.error); return j.data; });
   return Demo.call(action, args);
 }
-function tracked(p) {
-  state.pending++; showSaving();
-  return p.then(function (v) { state.pending--; showSaving(true); return v; }, function (e) { state.pending--; showSaving(); toast(e.message || 'Algo deu errado. Tente de novo.'); throw e; });
+function isNetErr(e) { return /failed to fetch|networkerror|load failed|network request failed|internet/i.test(String(e && e.message || e)); }
+function semAcesso(e) { return /^ACESSO_NEGADO/.test(String(e && e.message || '')); }
+function friendly(e) {
+  if (isNetErr(e)) return 'Sem internet. Vamos tentar de novo quando a conexão voltar.';
+  if (semAcesso(e)) { state.semAcesso = true; return 'Este aparelho ainda não tem acesso. Abra o seu link pessoal.'; }
+  return (e && e.message) || 'Algo deu errado. Tente de novo.';
 }
+function tracked(p, quiet) {
+  state.pending++; showSaving();
+  return p.then(function (v) { state.pending--; showSaving(true); return v; }, function (e) {
+    state.pending--; showSaving();
+    if (!(quiet && isNetErr(e))) toast(friendly(e));
+    throw e;
+  });
+}
+/* Alterações que não chegaram ao servidor: ficam marcadas e são reenviadas sozinhas. */
+var unsaved = {};
+function unsavedCount() { return Object.keys(unsaved).reduce(function (n, id) { return n + Object.keys(unsaved[id]).length; }, 0); }
+function queueUnsaved(id, patch) { unsaved[id] = Object.assign(unsaved[id] || {}, patch); paintUnsaved(); showSaving(); }
+function paintUnsaved() {
+  document.querySelectorAll('.in[data-id][data-f]').forEach(function (el) {
+    var u = unsaved[el.getAttribute('data-id')], f = el.getAttribute('data-f');
+    var on = !!(u && Object.prototype.hasOwnProperty.call(u, f));
+    el.classList.toggle('unsaved', on);
+    if (on) el.setAttribute('title', 'Ainda não salvo (sem internet). Vamos tentar de novo sozinhos.'); else if (el.getAttribute('title') === 'Ainda não salvo (sem internet). Vamos tentar de novo sozinhos.') el.removeAttribute('title');
+  });
+}
+var retrying = false;
+function retryUnsaved() {
+  if (retrying || !unsavedCount()) return;
+  retrying = true;
+  var ids = Object.keys(unsaved), left = ids.length;
+  ids.forEach(function (id) {
+    var patch = unsaved[id], sent = JSON.stringify(patch);
+    call('update', id, patch, actor()).then(function (srv) {
+      if (JSON.stringify(unsaved[id]) === sent) delete unsaved[id];
+      mergeServer(srv);
+    }, function () {}).then(function () {
+      if (--left === 0) { retrying = false; paintUnsaved(); showSaving(unsavedCount() ? false : true); if (!unsavedCount()) toast('Conexão de volta. Alterações salvas.'); }
+    });
+  });
+}
+window.addEventListener('online', retryUnsaved);
+setInterval(retryUnsaved, 15000);
 var savedTimer;
 function showSaving(done) {
   var el = $('#saving');
   clearTimeout(savedTimer);
+  var n = unsavedCount();
+  el.classList.toggle('warn', n > 0 && !state.pending);
+  if (n > 0 && !state.pending) { el.innerHTML = 'Sem internet: ' + n + (n === 1 ? ' alteração não salva' : ' alterações não salvas') + '<button type="button" data-act="retry">Tentar agora</button>'; return; }
   if (state.pending > 0) el.textContent = 'Salvando…';
   else if (done) { el.textContent = 'Salvo'; savedTimer = setTimeout(function () { el.textContent = ''; }, 1600); }
   else el.textContent = '';
@@ -595,6 +663,9 @@ function photoSrc(f) { return f.url || ('https://drive.google.com/thumbnail?id='
 function applyConfig(d) {
   state.hasClaude = !!d.hasClaude; state.hasTranscription = !!d.hasTranscription; state.autoSuggest = d.autoSuggest !== false;
   // Os botões mostram os papéis (Proprietário/Prestador); os nomes do servidor ficam só para os e-mails.
+  /* Com link pessoal, o servidor diz quem é você pelo link: o papel deixa de ser escolhido no aparelho. */
+  state.voce = papel(d.voce || ''); state.semAcesso = false;
+  if (state.voce) { LS.set('obra.eu', state.voce); LS.set('obra.who', state.voce); }
 }
 function actor() { return eu() || LS.get('obra.who') || CONFIG.PRESTADOR; }
 function load() {
@@ -605,7 +676,7 @@ function load() {
     var m = /^#os-([\w-]+)$/.exec(location.hash || '');
     if (m && itemById(m[1])) state.openId = m[1];
     render();
-  }).catch(function (e) { state.loaded = true; render(); toast('Não consegui carregar: ' + e.message); });
+  }).catch(function (e) { state.loaded = true; var msg = friendly(e); render(); if (!state.semAcesso) toast('Não consegui carregar: ' + msg); });
 }
 
 /* ===================== Render ===================== */
@@ -623,6 +694,7 @@ function render() {
   $('#tabLog').setAttribute('aria-pressed', state.view === 'registro');
   $('#content').innerHTML = state.view === 'lista' ? listHTML() : state.view === 'registro' ? logHTML() : calHTML();
   renderLayer();
+  paintUnsaved();
 }
 document.addEventListener('focusout', function () {
   setTimeout(function () { if (state.dirty && !editing()) render(); }, 0);
@@ -630,7 +702,7 @@ document.addEventListener('focusout', function () {
 
 function eu() { return LS.get('obra.eu') || ''; }
 function renderOwner() {
-  var b = $('#ownerBtn'), n = eu();
+  var b = $('#ownerBtn'), n = state.voce || eu();
   b.className = 'btn owner' + (n ? ' on' : '');
   b.innerHTML = '<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span class="own-txt">' + (n ? esc(n) : 'Quem é você?') + '</span>';
   b.setAttribute('aria-label', n ? 'Você está como ' + n + '. Toque para trocar.' : 'Informe seu nome');
@@ -647,8 +719,8 @@ function renderSummary() {
   $('#summary').innerHTML =
     kpi('ok', money(t.aprovado), 'Aprovado · ' + n.aprovado) +
     kpi('wait', money(t.aguardando), 'Aguardando · ' + n.aguardando) +
-    kpi('cob', money(cob), 'Total cobrado') +
-    kpi('dif', money(dif), 'Total da diferença');
+    kpi('cob', money(cob), 'Total a pagar') +
+    kpi('dif', money(dif), 'Abatimento previsto');
   function kpi(c, v, l) { return '<div class="kpi ' + c + '"><b>' + esc(v) + '</b><span><i></i>' + esc(l) + '</span></div>'; }
 }
 
@@ -668,6 +740,12 @@ function statusControl(it) {
   }).join('') + '</div>';
 }
 var ACAO = { aprovado: 'Aprovado', nao_aprovado: 'Não aprovado', aguardando: 'Voltou para aguardando' };
+function valorTxt(e) {
+  var t = [];
+  if (num(e.de) !== num(e.para)) t.push('Total ' + money(e.de) + ' → ' + money(e.para));
+  if (String(e.deCobrado) !== String(e.paraCobrado)) t.push('A pagar ' + (e.deCobrado === '' || e.deCobrado == null ? '—' : money(e.deCobrado)) + ' → ' + (e.paraCobrado === '' || e.paraCobrado == null ? '—' : money(e.paraCobrado)));
+  return 'Valor alterado: ' + (t.join(' · ') || 'sem mudança no total');
+}
 function quando(isoStr) {
   var d = new Date(isoStr); if (isNaN(d)) return '';
   return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) + ' às ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
@@ -689,6 +767,7 @@ function materialCell(it, inDrawer) {
 
 function listHTML() {
   if (!state.loaded) return '<div class="empty"><span class="spin"></span>Carregando serviços…</div>';
+  if (state.semAcesso) return '<div class="empty" role="alert">' + ICON.lock + '<b>Este aparelho ainda não tem acesso</b><p>Abra o seu <strong>link pessoal</strong> da Obra da Casa (o proprietário envia). Depois disso, este aparelho fica liberado e você pode usar o endereço normal.</p></div>';
   var items = state.items.filter(function (it) { return state.filter === 'todos' || it.status === state.filter; });
   if (!state.items.length) return '<div class="empty"><svg class="big" aria-hidden="true"><use href="#elmo"/></svg><b>Nenhum serviço cadastrado</b><p>Toque em <strong>Novo serviço</strong>, grave um áudio contando o problema e tire uma foto. Nós sugerimos a solução e o prestador faz o orçamento.</p></div>';
   if (!items.length) return '<div class="empty"><b>Nada por aqui</b><p>Nenhum serviço com este status.</p></div>';
@@ -703,14 +782,14 @@ function listHTML() {
       '<div class="card-top">' +
         '<button class="svc" data-open="' + it.id + '"><span class="thumb">' + thumb + '</span><span class="os">' + osNum(it.numero) + '</span><span class="ttl">' + esc(it.titulo) + '</span>' +
           (it.descricao ? '<span class="desc">' + esc(it.descricao) + '</span>' : '') + (flags.length ? '<span class="flags">' + flags.join('') + '</span>' : '') + '</button>' +
-        '<div class="card-status">' + statusControl(it) + quemAprovou(it) + '</div>' +
+        '<div class="card-status"><span class="badge s-' + it.status + '">' + STATUS[it.status] + '</span>' + quemAprovou(it) + '</div>' +
       '</div>' +
       '<div class="fields">' +
         '<label class="cell money"><span class="lbl">Mão de obra</span><input class="in" inputmode="decimal" placeholder="0,00" data-id="' + it.id + '" data-f="maoDeObra" value="' + moneyIn(it.maoDeObra) + '"></label>' +
         '<div class="cell money"><span class="lbl">Material</span>' + materialCell(it) + '</div>' +
         '<div class="cell total-cell"><span class="lbl">Total</span><span class="total' + (it.total ? '' : ' zero') + '" data-calc="total" data-id="' + it.id + '">' + (it.total ? money(it.total) : 'sem valor') + '</span></div>' +
-        '<label class="cell money"><span class="lbl">Valor cobrado</span><input class="in" inputmode="decimal" placeholder="0,00" data-id="' + it.id + '" data-f="valorCobrado" value="' + cobradoIn(it.valorCobrado) + '"></label>' +
-        '<div class="cell dif-cell"><span class="lbl">Diferença</span><span class="dif' + (it.temCobrado ? '' : ' zero') + '" data-calc="dif" data-id="' + it.id + '">' + difHTML(it) + '</span></div>' +
+        '<label class="cell money"><span class="lbl">Valor a pagar</span><input class="in" inputmode="decimal" placeholder="0,00" data-id="' + it.id + '" data-f="valorCobrado" value="' + cobradoIn(it.valorCobrado) + '"></label>' +
+        '<div class="cell dif-cell"><span class="lbl">Abatimento</span><span class="dif' + (it.temCobrado ? '' : ' zero') + '" data-calc="dif" data-id="' + it.id + '">' + difHTML(it) + '</span></div>' +
         '<label class="cell"><span class="lbl">Início <small class="opt">(opcional)</small></span><input class="in" type="date" data-id="' + it.id + '" data-f="inicio" value="' + esc(it.inicio) + '"></label>' +
         '<label class="cell"><span class="lbl">Término <small class="opt">(opcional)</small></span><input class="in" type="date" data-id="' + it.id + '" data-f="termino" value="' + esc(it.termino) + '"' + (it.inicio ? ' min="' + esc(it.inicio) + '"' : '') + '></label>' +
       '</div>' +
@@ -723,9 +802,9 @@ function logHTML() {
   var ev = [];
   state.items.forEach(function (it) { (it.historico || []).forEach(function (e) { ev.push({ e: e, it: it }); }); });
   ev.sort(function (a, b) { return String(b.e.em).localeCompare(String(a.e.em)); });
-  var aprov = ev.filter(function (x) { return x.e.tipo === 'status'; });
-  if (!aprov.length) return '<div class="empty"><b>Nenhuma aprovação registrada</b><p>Quando alguém aprovar, recusar ou voltar um serviço para aguardando, aparece aqui com o nome e a hora.</p></div>';
-  return '<div class="log"><div class="log-head"><h2>Registro de aprovações</h2><span class="note">' + aprov.length + (aprov.length === 1 ? ' registro' : ' registros') + '</span></div>' +
+  var aprov = ev.filter(function (x) { return x.e.tipo === 'status' || x.e.tipo === 'valor'; });
+  if (!aprov.length) return '<div class="empty"><b>Nenhuma aprovação registrada</b><p>Quando alguém aprovar, recusar, mudar um valor ou voltar um serviço para aguardando, aparece aqui com o nome e a hora.</p></div>';
+  return '<div class="log"><div class="log-head"><h2>Registro de aprovações e valores</h2><span class="note">' + aprov.length + (aprov.length === 1 ? ' registro' : ' registros') + '</span></div>' +
     '<ul class="hist log-list">' + aprov.map(function (x) {
       return '<li>' + histLinha(x.e) + '<button class="log-os" data-open="' + x.it.id + '">' + osNum(x.it.numero) + ' · ' + esc(x.it.titulo) + '</button></li>';
     }).join('') + '</ul></div>';
@@ -785,9 +864,34 @@ function renderLayer() {
   if (state.lightbox) html += '<div class="lightbox" data-act="close-lightbox"><img src="' + esc(state.lightbox) + '" alt="Foto ampliada"></div>';
   var layer = $('#layer');
   var scroll = layer.querySelector('.drawer') ? layer.querySelector('.drawer').scrollTop : 0;
+  var key = (it ? 'd:' + it.id : '') + '|' + (state.modal || '') + '|' + (state.lightbox ? 'l' : '');
+  var opening = key !== layerKey && key !== '||';
+  if (layerKey === '||' && opening) lastFocus = focusSelector(document.activeElement);
+  var keepFocus = !opening && key === layerKey && layer.contains(document.activeElement) ? focusSelector(document.activeElement) : null;
   layer.innerHTML = html;
-  var dr = layer.querySelector('.drawer'); if (dr) dr.scrollTop = scroll;
+  if (keepFocus) { var kf = layer.querySelector(keepFocus); if (kf) kf.focus({ preventScroll: true }); }
+  var dr = layer.querySelector('.drawer'); if (dr) { dr.scrollTop = scroll; dr.setAttribute('tabindex', '-1'); dr.inert = !!(state.modal || state.lightbox); }
+  layer.querySelectorAll('.modal').forEach(function (m) { m.setAttribute('tabindex', '-1'); });
   document.body.style.overflow = html ? 'hidden' : '';
+  /* Enquanto houver ficha, modal ou foto aberta, o resto da página fica inerte (Tab não sai da camada). */
+  document.querySelectorAll('body > header, body > .demo, body > main, body > .fab').forEach(function (el) { el.inert = key !== '||'; });
+  if (opening) {
+    var target = layer.querySelector('.lightbox') || layer.querySelector('.modal') || dr;
+    if (target) setTimeout(function () { (target.querySelector('#apprPin') || target).focus({ preventScroll: true }); }, 0);
+  } else if (key === '||' && layerKey !== '||') {
+    var back = lastFocus && document.querySelector(lastFocus);
+    setTimeout(function () { if (back) back.focus({ preventScroll: true }); }, 0);
+  }
+  layerKey = key;
+  paintUnsaved();
+}
+var layerKey = '||', lastFocus = null;
+function focusSelector(el) {
+  if (!el || el === document.body) return null;
+  if (el.hasAttribute('data-open')) return '[data-open="' + el.getAttribute('data-open') + '"]';
+  if (el.id) return '#' + el.id;
+  if (el.hasAttribute('data-act')) return '[data-act="' + el.getAttribute('data-act') + '"]';
+  return null;
 }
 
 function mediaHTML(target, fotos, audios, itemId) {
@@ -829,13 +933,14 @@ function newHTML() {
       '<div class="field">' + mediaHTML('new', d.fotos, d.audios) + '</div>' +
       '<label class="field"><span>Título <small style="font-weight:400">(opcional)</small></span><input class="in" id="n-titulo" placeholder="' + (state.hasClaude ? 'Se deixar vazio, criamos a partir do áudio' : 'Ex.: Infiltração na parede do quarto') + '" value="' + esc(d.titulo) + '" maxlength="140"></label>' +
       '<label class="field"><span>Descrição <small style="font-weight:400">(opcional se gravar áudio)</small></span><textarea class="in" id="n-desc" placeholder="Onde fica, desde quando, o que você já percebeu…">' + esc(d.descricao) + '</textarea></label>' +
-      '<div class="field"><span>Quem está cadastrando</span><div class="seg" role="group">' + [CONFIG.DONO, CONFIG.PRESTADOR].map(function (p) {
+      (state.voce ? '' : '<div class="field"><span>Quem está cadastrando</span><div class="seg" role="group">' + [CONFIG.DONO, CONFIG.PRESTADOR].map(function (p) {
         return '<button class="' + (d.criadoPor === p ? 'on s-aprovado' : '') + '" data-act="who" data-who="' + esc(p) + '" aria-pressed="' + (d.criadoPor === p) + '">' + esc(p) + '</button>';
-      }).join('') + '</div></div>' +
+      }).join('') + '</div></div>') +
+      (d.error ? '<p class="warn" role="alert" style="margin:0">' + esc(d.error) + '</p>' : '') +
       (d.step ? '<div class="progress"><span class="spin"></span>' + esc(d.step) + '</div>'
         : state.hasClaude && state.autoSuggest ? '<p class="note" style="margin:0">Ao enviar, sugerimos como resolver e quais materiais usar.</p>' : '') +
     '</div>' +
-    '<div class="m-foot"><button class="btn ghost" data-act="close-modal">Cancelar</button><button class="btn primary" data-act="create"' + (d.saving ? ' disabled' : '') + '>' + (d.saving ? 'Enviando…' : 'Enviar') + '</button></div>';
+    '<div class="m-foot"><button class="btn ghost" data-act="close-modal">Cancelar</button><button class="btn primary" data-act="create"' + (d.saving ? ' disabled' : '') + '>' + (d.saving ? 'Enviando…' : d.createdId ? 'Tentar de novo' : 'Enviar') + '</button></div>';
 }
 
 function whoHTML() {
@@ -889,9 +994,9 @@ function drawerHTML(it) {
       return '<div class="mat' + (m.usar ? '' : ' off') + '">' +
         '<input type="checkbox" id="m-u-' + m.id + '" data-m="' + i + '" data-k="usar"' + (m.usar ? ' checked' : '') + ' aria-label="Vai usar ' + esc(m.nome) + '">' +
         '<div class="mname">' + (m.sugerido ? '<b>' + esc(m.nome) + '</b>' + (m.obs ? '<small>' + esc(m.obs) + '</small>' : '') + '<span class="tag">sugerido</span>'
-          : '<input class="in" id="m-n-' + m.id + '" data-m="' + i + '" data-k="nome" value="' + esc(m.nome) + '" placeholder="Nome do material">') + '</div>' +
-        '<input class="in qtd" id="m-q-' + m.id + '" data-m="' + i + '" data-k="qtd" value="' + esc(m.qtd) + '" placeholder="Qtd.">' +
-        '<input class="in val money-in" style="text-align:right" id="m-v-' + m.id + '" inputmode="decimal" data-m="' + i + '" data-k="valor" value="' + moneyIn(m.valor) + '" placeholder="0,00">' +
+          : '<input class="in" id="m-n-' + m.id + '" data-m="' + i + '" data-k="nome" value="' + esc(m.nome) + '" placeholder="Nome do material" aria-label="Nome do material ' + (i + 1) + '">') + '</div>' +
+        '<input class="in qtd" id="m-q-' + m.id + '" data-m="' + i + '" data-k="qtd" value="' + esc(m.qtd) + '" placeholder="Qtd." aria-label="Quantidade de ' + esc(m.nome || 'material ' + (i + 1)) + '">' +
+        '<input class="in val money-in" style="text-align:right" id="m-v-' + m.id + '" inputmode="decimal" data-m="' + i + '" data-k="valor" value="' + moneyIn(m.valor) + '" placeholder="0,00" aria-label="Valor de ' + esc(m.nome || 'material ' + (i + 1)) + ' em reais">' +
         '<button class="icon-btn" data-act="del-mat" data-idx="' + i + '" aria-label="Remover ' + esc(m.nome) + '">' + ICON.trash + '</button></div>';
     }).join('') + '</div>' +
     '<div class="actions"><button class="btn small" data-act="add-mat">' + ICON.plus + 'Adicionar material</button></div>' +
@@ -903,8 +1008,11 @@ function drawerHTML(it) {
     '<div class="field"><span>Material (R$)</span>' + materialCell(it, true) + '</div></div>' +
     (it.materialFromList ? '<p class="from-list" style="margin:0">O valor do material vem da soma da lista acima.</p>' : '') +
     '<div class="bigtotal"><span>Total</span><b data-calc="total" data-id="' + it.id + '">' + money(it.total) + '</b></div>' +
-    '<label class="field"><span>Valor cobrado (R$)</span><input class="in" style="text-align:right" id="d-cob" inputmode="decimal" placeholder="0,00" data-id="' + it.id + '" data-f="valorCobrado" value="' + cobradoIn(it.valorCobrado) + '"></label>' +
-    '<div class="bigdif"><span>Diferença</span><b class="' + (it.diferenca < 0 ? 'neg' : '') + '" data-calc="dif" data-id="' + it.id + '">' + difHTML(it) + '</b></div></section>';
+    '<label class="field"><span>Valor a pagar (R$)</span><small class="help" style="margin:0">O que o prestador vai cobrar de você por este serviço.</small><input class="in" style="text-align:right" id="d-cob" inputmode="decimal" placeholder="0,00" data-id="' + it.id + '" data-f="valorCobrado" value="' + cobradoIn(it.valorCobrado) + '"></label>' +
+    '<div class="bigdif"><span>Abatimento da dívida</span><b class="' + (it.diferenca < 0 ? 'neg' : '') + '" data-calc="dif" data-id="' + it.id + '">' + difHTML(it) + '</b></div>' +
+    '<p class="help">Abatimento = Total (mão de obra + material) − Valor a pagar. É o quanto este serviço abate da dívida do prestador com você.</p>' +
+    (it.temCobrado && it.diferenca < 0 ? '<p class="help" style="color:var(--no)">O valor a pagar está acima do total: este serviço não abate nada da dívida.</p>' : '') +
+    (it.status !== 'aguardando' ? '<p class="help">Este serviço está <b>' + STATUS[it.status].toLowerCase() + '</b>. Se algum valor mudar, ele volta para Aguardando e precisa de nova aprovação.</p>' : '') + '</section>';
 
   /* Datas */
   h += '<section class="sec"><h3>Execução prevista</h3><div class="grid2">' +
@@ -914,8 +1022,12 @@ function drawerHTML(it) {
 
   /* Aprovação */
   var hist = (it.historico || []).slice().reverse();
+  var cs = state.confirmStatus && state.confirmStatus.id === it.id ? state.confirmStatus.s : null;
   h += '<section class="sec"><div class="sec-title"><h3>Aprovação</h3></div>' + statusControl(it) +
-    (eu() ? '<p class="note" style="margin:0">Fica registrado em nome de <b>' + esc(eu()) + '</b>. <button class="linkbtn" data-act="who-set">Trocar</button></p>' : '<p class="note" style="margin:0">Ao aprovar, pedimos seu nome para o registro.</p>') +
+    (cs ? '<div class="confirm" id="apprBox">' + (cs === 'aprovado' ? 'Aprovar ' : 'Marcar como não aprovado ') + osNum(it.numero) + ' com total de <b class="appr-total num">' + money(it.total) + '</b>' + (it.temCobrado ? ' (a pagar ' + money(it.valorCobrado) + (it.diferenca > 0 ? ' · abate ' + money(it.diferenca) + ' da dívida' : '') + ')' : '') + '?' +
+        '<label class="field" style="margin-top:8px"><span>PIN do proprietário</span><input class="in pin-in" id="apprPin" type="password" inputmode="numeric" autocomplete="off" maxlength="8"></label>' +
+        '<div class="actions"><button class="btn small ' + (cs === 'aprovado' ? 'primary' : 'danger') + '" data-act="status-go">' + (cs === 'aprovado' ? 'Aprovar' : 'Confirmar não aprovado') + '</button><button class="btn small" data-act="status-cancel">Cancelar</button></div></div>'
+      : '<p class="note" style="margin:0">Aprovar ou recusar pede o PIN do proprietário. Voltar para Aguardando fica registrado no nome deste aparelho' + (eu() ? ' (<b>' + esc(eu()) + '</b>, <button class="linkbtn" data-act="who-set">trocar</button>)' : '') + '.</p>') +
     (hist.length ? '<ul class="hist">' + hist.map(function (e) { return '<li>' + histLinha(e) + '</li>'; }).join('') + '</ul>' : '') +
     (state.confirmDel
       ? '<div class="confirm">Apagar ' + osNum(it.numero) + ' com fotos e áudios? Não dá para desfazer. Digite o PIN do proprietário:' +
@@ -927,8 +1039,8 @@ function drawerHTML(it) {
 }
 
 function histLinha(e) {
-  var txt = e.tipo === 'criado' ? 'Cadastrado' : (ACAO[e.para] || e.para);
-  var cls = e.tipo === 'criado' ? 'h-new' : 'h-' + e.para;
+  var txt = e.tipo === 'criado' ? 'Cadastrado' : e.tipo === 'valor' ? valorTxt(e) : (ACAO[e.para] || e.para);
+  var cls = e.tipo === 'criado' ? 'h-new' : e.tipo === 'valor' ? 'h-valor' : 'h-' + e.para;
   return '<span class="hdot ' + cls + '"></span><span class="htxt"><b>' + esc(txt) + '</b>' + (e.por ? ' por ' + esc(papel(e.por)) : '') + '</span><span class="hwhen">' + quando(e.em) + '</span>';
 }
 
@@ -946,38 +1058,71 @@ function updateCalcs() {
 }
 
 /* ===================== Ações ===================== */
+var MONEY_FIELDS = ['maoDeObra', 'materialManual', 'valorCobrado'];
 function saveField(id, f, raw, input) {
   var it = itemById(id); if (!it) return;
   var v = raw;
+  if (MONEY_FIELDS.indexOf(f) !== -1) {
+    if (!moneyOk(raw)) {
+      if (input) { input.setAttribute('aria-invalid', 'true'); input.value = f === 'valorCobrado' ? cobradoIn(it[f]) : moneyIn(it[f]); setTimeout(function () { input.removeAttribute('aria-invalid'); }, 4000); }
+      toast('Valor inválido. Use só números, por exemplo 1.500,00.');
+      return;
+    }
+    if (input) input.removeAttribute('aria-invalid');
+  }
   if (f === 'maoDeObra' || f === 'materialManual') { v = num(raw); if (input) input.value = moneyIn(v); }
   if (f === 'valorCobrado') { v = String(raw).trim() === '' ? '' : num(raw); if (input) input.value = cobradoIn(v); }
   if (f === 'titulo' && !String(v).trim()) { if (input) input.value = it.titulo; return; }
   if (it[f] === v) return;
-  it[f] = v; computeTotals(it); updateCalcs();
+  var antes = { total: it.total, cobrado: it.valorCobrado };
+  it[f] = v; computeTotals(it); valorMudou(it, antes); updateCalcs();
   var patch = {}; patch[f] = v;
-  upd(id, 'update', [id, patch, actor()]);
+  upd(id, 'update', [id, patch, actor()], true).catch(function (e) { if (isNetErr(e)) queueUnsaved(id, patch); });
   if (f === 'inicio' || f === 'termino' || f === 'titulo') state.dirty = true;
+}
+/* Mudou o total ou o valor a pagar: registra e, se já estava aprovado/recusado, volta para Aguardando (o servidor faz o mesmo). */
+function valorMudou(it, antes) {
+  if (it.total === antes.total && String(it.valorCobrado) === String(antes.cobrado)) return;
+  var por = actor(), em = new Date().toISOString();
+  it.historico = (it.historico || []).concat([{ tipo: 'valor', de: antes.total, para: it.total, deCobrado: antes.cobrado, paraCobrado: it.valorCobrado, por: por, em: em }]);
+  if (it.status !== 'aguardando') {
+    it.historico.push({ tipo: 'status', de: it.status, para: 'aguardando', por: por + ' (valor alterado)', em: em });
+    it.status = 'aguardando'; state.dirty = true;
+    paintStatus(it);
+    toast('Valor alterado. O serviço voltou para Aguardando e precisa de nova aprovação.');
+  }
+}
+/* Atualiza os selos de status sem redesenhar a tela (o campo em edição continua com o foco). */
+function paintStatus(it) {
+  document.querySelectorAll('.drawer .d-head .badge, [data-row="' + it.id + '"] .card-status .badge').forEach(function (el) {
+    if (el.closest('.drawer') && state.openId !== it.id) return;
+    el.className = 'badge s-' + it.status; el.textContent = STATUS[it.status];
+  });
+  document.querySelectorAll('.drawer .seg [data-act="status"]').forEach(function (bt) {
+    var on = bt.getAttribute('data-status') === it.status;
+    bt.classList.toggle('on', on); bt.setAttribute('aria-pressed', on);
+  });
 }
 
 /* Envio ao servidor sem atropelar edições locais:
    a resposta só substitui o item quando não há outro envio dele em andamento,
    e a lista de materiais local é mantida enquanto houver mudança ainda não enviada. */
 var inflight = {}, matTimers = {}, matVer = {}, matSent = {};
-function upd(id, action, args) {
+function upd(id, action, args, quiet) {
   inflight[id] = (inflight[id] || 0) + 1;
-  return tracked(call.apply(null, [action].concat(args))).then(function (srv) {
+  return tracked(call.apply(null, [action].concat(args)), quiet).then(function (srv) {
     inflight[id]--; if (!inflight[id]) mergeServer(srv); return srv;
   }, function (e) { inflight[id]--; throw e; });
 }
 function touchMaterials(it) { matVer[it.id] = (matVer[it.id] || 0) + 1; }
-function saveMaterials(it) {
-  touchMaterials(it); computeTotals(it); updateCalcs();
+function saveMaterials(it, antes) {
+  touchMaterials(it); computeTotals(it); if (antes) valorMudou(it, antes); updateCalcs();
   clearTimeout(matTimers[it.id]);
   matTimers[it.id] = setTimeout(function () {
     matTimers[it.id] = null;
     var v = matVer[it.id];
     var list = it.materiais.filter(function (m) { return m.nome || m.qtd || num(m.valor); });
-    upd(it.id, 'update', [it.id, { materiais: list }, actor()]).then(function () { matSent[it.id] = v; }, function () {});
+    upd(it.id, 'update', [it.id, { materiais: list }, actor()], true).then(function () { matSent[it.id] = v; }, function (e) { if (isNetErr(e)) queueUnsaved(it.id, { materiais: list }); });
     matSent[it.id] = v;
   }, 500);
 }
@@ -989,7 +1134,8 @@ function flushAll() {
     clearTimeout(matTimers[id]); matTimers[id] = null;
     var it = itemById(id); if (!it) return;
     var v = matVer[id];
-    upd(id, 'update', [id, { materiais: it.materiais.filter(function (m) { return m.nome || m.qtd || num(m.valor); }) }, actor()]).then(function () { matSent[id] = v; }, function () {});
+    var list = it.materiais.filter(function (m) { return m.nome || m.qtd || num(m.valor); });
+    upd(id, 'update', [id, { materiais: list }, actor()], true).then(function () { matSent[id] = v; }, function (e) { if (isNetErr(e)) queueUnsaved(id, { materiais: list }); });
     matSent[id] = v;
   });
 }
@@ -1004,12 +1150,13 @@ function saveAndClose() {
       if (state.pending > 0 && Date.now() - t0 < 20000) return wait();
       state.closing = false;
       if (state.pending > 0) { toast('Ainda salvando. Aguarde um instante e tente de novo.'); renderLayer(); return; }
-      state.openId = null; render(); toast('Alterações salvas.');
+      state.openId = null; render(); toast(unsavedCount() ? 'Sem internet: as alterações ficam marcadas e vamos salvar quando a conexão voltar.' : 'Alterações salvas.');
     }, 150);
   })();
 }
 function mergeServer(srv) {
   if (!srv) return;
+  if (unsaved[srv.id]) Object.keys(unsaved[srv.id]).forEach(function (k) { srv[k] = unsaved[srv.id][k]; });
   var cur = itemById(srv.id);
   if (cur) {
     var unsent = matTimers[srv.id] || (matVer[srv.id] || 0) !== (matSent[srv.id] || 0);
@@ -1021,15 +1168,33 @@ function mergeServer(srv) {
   render();
 }
 
-function setStatus(id, s) {
+/* Aprovar/recusar: abre a confirmação com o total e o PIN do proprietário. Voltar para Aguardando: pede só o nome. */
+function askStatus(id, s) {
   var it = itemById(id); if (!it || it.status === s) return;
-  if (!eu()) { state.pendingStatus = { id: id, s: s }; state.modal = 'who'; renderLayer(); return; }
-  var prev = it.status, por = eu();
+  if (s === 'aguardando') return setStatus(id, s);
+  state.confirmStatus = { id: id, s: s }; renderLayer();
+  setTimeout(function () {
+    var box = $('#apprBox'), p = $('#apprPin');
+    if (box) box.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    if (p) p.focus({ preventScroll: true });
+  }, 0);
+}
+function setStatus(id, s, pin, isUndo) {
+  var it = itemById(id); if (!it || it.status === s) return;
+  var precisaPin = s !== 'aguardando';
+  if (!precisaPin && !pin && !eu()) { state.pendingStatus = { id: id, s: s }; state.modal = 'who'; renderLayer(); return; }
+  var prev = it.status, por = precisaPin || pin ? CONFIG.DONO : eu();
   it.status = s;
   it.historico = (it.historico || []).concat([{ tipo: 'status', de: prev, para: s, por: por, em: new Date().toISOString() }]);
+  state.confirmStatus = null;
   render();
-  upd(id, 'setStatus', [id, s, por]).then(function () { toast((ACAO[s] || s) + ' por ' + por + '.'); }).catch(function () {
-    it.status = prev; it.historico = it.historico.slice(0, -1); render();
+  upd(id, 'setStatus', [id, s, por, pin || '']).then(function () {
+    if (isUndo) { toast('Desfeito.'); return; }
+    toast((ACAO[s] || s) + ' por ' + por + '.', { label: 'Desfazer', fn: function () { setStatus(id, prev, pin, true); } });
+  }).catch(function (e) {
+    it.status = prev; it.historico = it.historico.slice(0, -1);
+    if (precisaPin && /PIN/i.test(e.message || '')) state.confirmStatus = { id: id, s: s };
+    render();
   });
 }
 function salvarNome(n) {
@@ -1052,7 +1217,7 @@ function papelInicial() {
   var a = papel(LS.get('obra.who')), b = papel(eu());
   return ok.indexOf(a) >= 0 ? a : ok.indexOf(b) >= 0 ? b : CONFIG.DONO;
 }
-function newDraft() { return { titulo: '', descricao: '', fotos: [], audios: [], criadoPor: papelInicial(), saving: false }; }
+function newDraft() { return { titulo: '', descricao: '', fotos: [], audios: [], criadoPor: state.voce || papelInicial(), saving: false }; }
 function readDraftInputs() {
   if (!state.draft) return;
   var t = $('#n-titulo'), d = $('#n-desc');
@@ -1065,22 +1230,32 @@ function createService() {
     toast('Grave um áudio, anexe uma foto ou escreva o que precisa ser feito.'); return;
   }
   if (!d.titulo.trim() && !(state.hasClaude && state.autoSuggest)) { toast('Escreva um título para o serviço.'); var t = $('#n-titulo'); if (t) t.focus(); return; }
-  d.saving = true; d.step = 'Enviando o serviço…'; renderLayer();
+  d.saving = true; d.step = d.createdId ? 'Reenviando o que faltou…' : 'Enviando o serviço…'; d.error = ''; renderLayer();
   LS.set('obra.who', d.criadoPor);
-  var newId, step = function (txt) { d.step = txt; renderLayer(); };
-  tracked(call('create', { titulo: d.titulo, descricao: d.descricao, criadoPor: d.criadoPor }).then(function (it) {
-    newId = it.id; setItem(it);
-    var chain = Promise.resolve(it);
-    d.fotos.forEach(function (f, i) { chain = chain.then(function () { step('Enviando foto ' + (i + 1) + ' de ' + d.fotos.length + '…'); return call('addPhoto', newId, f.url, f.nome); }); });
-    d.audios.forEach(function (a) { chain = chain.then(function () { step(state.hasTranscription ? 'Enviando e transcrevendo o áudio…' : 'Enviando o áudio…'); return call('addAudio', newId, a.url, a.duracao, a.nome); }); });
+  var step = function (txt) { d.step = txt; renderLayer(); };
+  /* Se o serviço já foi criado numa tentativa anterior, não cria de novo: só envia as mídias que faltaram. */
+  var start = d.createdId ? Promise.resolve(itemById(d.createdId)) : call('create', { titulo: d.titulo, descricao: d.descricao, criadoPor: d.criadoPor }).then(function (it) { d.createdId = it.id; setItem(it); return it; });
+  tracked(start.then(function (it) {
+    var newId = d.createdId, chain = Promise.resolve(it);
+    var fotos = d.fotos.filter(function (f) { return !f.sent; }), audios = d.audios.filter(function (a) { return !a.sent; });
+    fotos.forEach(function (f, i) { chain = chain.then(function () { step('Enviando foto ' + (i + 1) + ' de ' + fotos.length + '…'); return call('addPhoto', newId, f.url, f.nome).then(function (r) { f.sent = true; return r; }); }); });
+    audios.forEach(function (a) { chain = chain.then(function () { step(state.hasTranscription ? 'Enviando e transcrevendo o áudio…' : 'Enviando o áudio…'); return call('addAudio', newId, a.url, a.duracao, a.nome).then(function (r) { a.sent = true; return r; }); }); });
     return chain;
   })).then(function (it) {
+    var newId = d.createdId;
     setItem(it);
     d.audios.forEach(function (a, i) { if (it.audios[i]) state.audioCache[it.audios[i].id] = a.url; });
     state.modal = null; state.draft = null; state.openId = newId; state.view = 'lista'; state.filter = 'todos';
     render();
     if (state.hasClaude && state.autoSuggest) requestSuggestion(newId);
-  }).catch(function () { d.saving = false; d.step = ''; renderLayer(); });
+  }).catch(function () {
+    d.saving = false; d.step = '';
+    if (d.createdId) {
+      var faltam = d.fotos.filter(function (f) { return !f.sent; }).length, faltamA = d.audios.filter(function (a) { return !a.sent; }).length;
+      d.error = 'O serviço foi criado (' + osNum((itemById(d.createdId) || {}).numero) + '), mas ' + [faltam ? faltam + (faltam === 1 ? ' foto' : ' fotos') : '', faltamA ? faltamA + (faltamA === 1 ? ' áudio' : ' áudios') : ''].filter(Boolean).join(' e ') + ' não ' + (faltam + faltamA === 1 ? 'foi ' : 'foram ') + (faltamA ? 'enviado' : 'enviada') + (faltam + faltamA === 1 ? '' : 's') + '. Toque em "Tentar de novo".';
+    }
+    render();
+  });
 }
 
 /* ---------- Fotos ---------- */
@@ -1183,28 +1358,36 @@ function attachAudio(target, dataUrl, dur, nome, itemId) {
 /* ---------- Eventos ---------- */
 document.addEventListener('click', function (e) {
   var open = e.target.closest('[data-open]');
-  if (open) { state.openId = open.getAttribute('data-open'); state.confirmSug = state.confirmDel = false; renderLayer(); return; }
+  if (open) { state.openId = open.getAttribute('data-open'); state.confirmSug = state.confirmDel = false; state.confirmStatus = null; renderLayer(); return; }
   var b = e.target.closest('[data-act]'); if (!b) return;
   var act = b.getAttribute('data-act'), it = state.openId && itemById(state.openId);
   switch (act) {
     case 'view': state.view = b.getAttribute('data-view'); LS.set('obra.view', state.view); render(); break;
     case 'filter': state.filter = b.getAttribute('data-filter'); render(); break;
-    case 'close': case 'back': if (state.rec) stopRecording(); flushAll(); state.openId = null; render(); break;
+    case 'close': case 'back': if (state.rec) stopRecording(); flushAll(); state.openId = null; state.confirmStatus = null; render(); break;
     case 'save-close': saveAndClose(); break;
     case 'new': state.draft = newDraft(); state.modal = 'new'; renderLayer(); if (window.matchMedia && matchMedia('(hover: hover) and (pointer: fine)').matches) setTimeout(function () { var t = $('#n-titulo'); if (t) t.focus(); }, 30); break;
     case 'close-modal': state.pendingStatus = null; if (state.rec) { state.rec.rec.onstop = null; state.rec.stream.getTracks().forEach(function (t) { t.stop(); }); clearInterval(state.rec.timer); state.rec = null; } state.modal = null; state.draft = null; renderLayer(); break;
     case 'who': readDraftInputs(); state.draft.criadoPor = b.getAttribute('data-who'); renderLayer(); break;
     case 'create': createService(); break;
-    case 'who-set': state.pendingStatus = null; state.modal = 'who'; renderLayer(); break;
+    case 'who-set': if (state.voce) { toast('Você está como ' + state.voce + ', pelo seu link pessoal de acesso.'); break; } state.pendingStatus = null; state.modal = 'who'; renderLayer(); break;
     case 'who-pick': salvarNome(b.getAttribute('data-name')); break;
     case 'who-ok': salvarNome(($('#whoIn') || {}).value); break;
-    case 'status': setStatus(b.getAttribute('data-id'), b.getAttribute('data-status')); break;
+    case 'status': askStatus(b.getAttribute('data-id'), b.getAttribute('data-status')); break;
+    case 'status-cancel': state.confirmStatus = null; renderLayer(); break;
+    case 'status-go': if (it && state.confirmStatus) {
+      var apin = (($('#apprPin') || {}).value || '').trim();
+      if (!apin) { toast('Digite o PIN do proprietário.'); var pf = $('#apprPin'); if (pf) pf.focus(); break; }
+      setStatus(it.id, state.confirmStatus.s, apin);
+    } break;
+    case 'retry': retryUnsaved(); break;
+    case 'toast-act': if (toastAction) { var fn = toastAction; toastAction = null; $('#toast').hidden = true; fn(); } break;
     case 'sug-ask': state.confirmSug = true; renderLayer(); break;
     case 'sug-cancel': state.confirmSug = false; renderLayer(); break;
     case 'sug-go': if (it) requestSuggestion(it.id); break;
     case 'use-prazo': if (it && it.sugestao && it.inicio) saveField(it.id, 'termino', iso(addDays(pd(it.inicio), it.sugestao.prazoDias - 1))); state.dirty = false; render(); break;
     case 'add-mat': if (it) { touchMaterials(it); it.materiais = (it.materiais || []).concat([{ id: uid(), nome: '', qtd: '', obs: '', usar: true, valor: 0, sugerido: false }]); renderLayer(); var last = document.querySelectorAll('.mat [data-k="nome"]'); if (last.length) last[last.length - 1].focus(); } break;
-    case 'del-mat': if (it) { it.materiais.splice(+b.getAttribute('data-idx'), 1); saveMaterials(it); renderLayer(); } break;
+    case 'del-mat': if (it) { var antesM = { total: it.total, cobrado: it.valorCobrado }; it.materiais.splice(+b.getAttribute('data-idx'), 1); saveMaterials(it, antesM); renderLayer(); } break;
     case 'add-photo': photoTarget = b.getAttribute('data-target'); readDraftInputs(); $('#photoPick').click(); break;
     case 'del-photo': {
       var idx = +b.getAttribute('data-idx');
@@ -1258,10 +1441,13 @@ document.addEventListener('change', function (e) {
     var m = it.materiais[+t.getAttribute('data-m')], k = t.getAttribute('data-k');
     if (!m) return;
     if (k === 'usar') { m.usar = t.checked; t.closest('.mat').classList.toggle('off', !t.checked); }
-    else if (k === 'valor') { m.valor = num(t.value); t.value = moneyIn(m.valor); }
+    else if (k === 'valor') {
+      if (!moneyOk(t.value)) { t.setAttribute('aria-invalid', 'true'); t.value = moneyIn(m.valor); toast('Valor inválido. Use só números, por exemplo 189,90.'); return; }
+      t.removeAttribute('aria-invalid'); m.valor = num(t.value); t.value = moneyIn(m.valor);
+    }
     else m[k] = t.value;
     var before = it.materialFromList;
-    saveMaterials(it);
+    saveMaterials(it, { total: it.total, cobrado: it.valorCobrado });
     if (before !== it.materialFromList) state.dirty = true;
   }
 });
@@ -1269,23 +1455,27 @@ document.addEventListener('keydown', function (e) {
   if (e.key === 'Escape') {
     if (state.lightbox) { state.lightbox = null; renderLayer(); }
     else if (state.modal) { $('[data-act="close-modal"]').click(); }
+    else if (state.confirmStatus) { state.confirmStatus = null; renderLayer(); }
     else if (state.openId) { flushAll(); state.openId = null; render(); }
   }
+  if (e.key === 'Enter' && e.target.id === 'apprPin') { e.preventDefault(); $('[data-act="status-go"]').click(); }
   if (e.key === 'Enter' && e.target.id === 'whoIn') $('[data-act="who-ok"]').click();
   if (e.key === 'Enter' && e.target.matches('input.in[data-f], input.in[data-m]')) e.target.blur();
 });
 
-var toastTimer = null;
-function toast(msg) {
+var toastTimer = null, toastAction = null;
+function toast(msg, action) {
   var el = $('#toast');
   if (!el) { el = document.createElement('div'); el.id = 'toast'; el.className = 'toast'; el.setAttribute('role', 'status'); document.body.appendChild(el); }
   el.textContent = msg; el.hidden = false;
-  clearTimeout(toastTimer); toastTimer = setTimeout(function () { el.hidden = true; }, 3800);
+  toastAction = action ? action.fn : null;
+  if (action) { var bt = document.createElement('button'); bt.type = 'button'; bt.className = 'toast-act'; bt.setAttribute('data-act', 'toast-act'); bt.textContent = action.label; el.appendChild(bt); }
+  clearTimeout(toastTimer); toastTimer = setTimeout(function () { el.hidden = true; toastAction = null; }, action ? 8000 : 3800);
 }
 
 /* Atualiza a cada 25 s para ver o que o outro preencheu */
 setInterval(function () {
-  if (document.hidden || state.pending || state.rec || state.modal || editing() || MODE === 'demo') return;
+  if (document.hidden || state.pending || state.rec || state.modal || editing() || unsavedCount() || MODE === 'demo') return;
   call('list').then(function (d) {
     if (state.pending || editing()) return;
     applyConfig(d);
@@ -1373,14 +1563,24 @@ var Demo = (function () {
         maoDeObra: 0, materialManual: 0, inicio: '', termino: '', status: 'aguardando', observacoes: '', fotos: [], audios: [], materiais: [], sugestao: null, sugestaoStatus: '' };
       computeTotals(it); items.push(it); return clone(it);
     },
-    update: function (id, p) { var it = find(id); Object.keys(p).forEach(function (k) { it[k] = clone(p[k]); }); computeTotals(it); return clone(it); },
+    update: function (id, p, actor) {
+      var it = find(id); computeTotals(it);
+      var antes = { total: it.total, cobrado: it.valorCobrado };
+      Object.keys(p).forEach(function (k) { it[k] = clone(p[k]); }); computeTotals(it);
+      if (it.total !== antes.total || String(it.valorCobrado) !== String(antes.cobrado)) {
+        var em = new Date().toISOString();
+        it.historico = (it.historico || []).concat([{ tipo: 'valor', de: antes.total, para: it.total, deCobrado: antes.cobrado, paraCobrado: it.valorCobrado, por: actor || 'Alguém', em: em }]);
+        if (it.status !== 'aguardando') { it.historico.push({ tipo: 'status', de: it.status, para: 'aguardando', por: (actor || 'Alguém') + ' (valor alterado)', em: em }); it.status = 'aguardando'; }
+      }
+      return clone(it);
+    },
     addPhoto: function (id, url, nome) { var it = find(id); it.fotos.push({ id: uid(), url: url, nome: nome }); return clone(it); },
     removePhoto: function (id, fid) { var it = find(id); it.fotos = it.fotos.filter(function (f) { return f.id !== fid; }); return clone(it); },
     addAudio: function (id, url, dur) { var it = find(id); it.audios.push({ id: uid(), url: url, duracao: Math.round(dur), transcricao: 'Transcrição simulada da prévia. Na versão real, aqui aparece o que a pessoa falou no áudio.' }); return clone(it); },
     removeAudio: function (id, fid) { var it = find(id); it.audios = it.audios.filter(function (a) { return a.id !== fid; }); return clone(it); },
     getAudio: function () { throw new Error('Áudio indisponível na prévia.'); },
     checkPin: function (p) { return p === pin; },
-    setStatus: function (id, s, por) { var it = find(id); if (it.status !== s) { it.historico = (it.historico || []).concat([{ tipo: 'status', de: it.status, para: s, por: por, em: new Date().toISOString() }]); it.status = s; } return clone(it); },
+    setStatus: function (id, s, por, p) { if (s !== 'aguardando') { if (p !== pin) throw new Error('PIN incorreto.'); por = 'Carlos'; } var it = find(id); if (it.status !== s) { it.historico = (it.historico || []).concat([{ tipo: 'status', de: it.status, para: s, por: por, em: new Date().toISOString() }]); it.status = s; } return clone(it); },
     remove: function (id, p) { if (p !== pin) throw new Error('PIN incorreto.'); items = items.filter(function (x) { return x.id !== id; }); return true; },
     suggest: function (id) {
       var it = find(id);

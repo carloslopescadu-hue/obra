@@ -44,16 +44,34 @@ function doPost(e) {
   let out;
   try {
     const body = JSON.parse(e.postData.contents);
-    out = { ok: true, data: api(body.action, body.args || []) };
+    out = { ok: true, data: api(body.action, body.args || [], body.token) };
   } catch (err) {
     out = { ok: false, error: String(err && err.message || err) };
   }
   return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);
 }
 
-function api(action, args) {
+/**
+ * Acesso por link pessoal. Depois de rodar `gerarLinksDeAcesso`, toda chamada precisa do código do link
+ * (do Carlos ou do Júlio). O servidor sabe quem está chamando pelo código, não pelo nome digitado.
+ * Enquanto os links não forem gerados, o app funciona como antes (modo aberto).
+ */
+let QUEM_ = null;
+function acessoRestrito_() { return !!(prop_('TOKEN_DONO') || prop_('TOKEN_PRESTADOR')); }
+function identificar_(token) {
+  const t = String(token || '');
+  if (t && t === prop_('TOKEN_DONO')) return nomeDono_();
+  if (t && t === prop_('TOKEN_PRESTADOR')) return nomePrestador_();
+  return null;
+}
+/** Nome de quem fez a ação: vem do link quando o acesso é restrito; senão, do nome informado. */
+function autor_(informado) { return QUEM_ || clean_(informado, 40); }
+
+function api(action, args, token) {
   const fn = ROUTES[action];
   if (!fn) throw new Error('Ação desconhecida: ' + action);
+  QUEM_ = identificar_(token);
+  if (acessoRestrito_() && !QUEM_) throw new Error('ACESSO_NEGADO: este aparelho ainda não tem acesso. Abra o seu link pessoal.');
   return fn.apply(null, args || []);
 }
 
@@ -64,7 +82,8 @@ const ROUTES = {
       hasClaude: !!prop_('ANTHROPIC_API_KEY'),
       hasTranscription: !!(prop_('ELEVENLABS_API_KEY') || prop_('GROQ_API_KEY')),
       autoSuggest: prop_('AUTO_SUGGEST') !== 'false',
-      dono: nomeDono_(), prestador: nomePrestador_()
+      dono: nomeDono_(), prestador: nomePrestador_(),
+      voce: QUEM_ || '', acessoRestrito: acessoRestrito_()
     };
   },
   create: function (fields) {
@@ -77,21 +96,25 @@ const ROUTES = {
         id: Utilities.getUuid().slice(0, 8),
         numero: items.reduce(function (m, x) { return Math.max(m, Number(x.numero) || 0); }, 0) + 1,
         criadoEm: now, atualizadoEm: now,
-        criadoPor: clean_(fields.criadoPor, 40),
+        criadoPor: autor_(fields.criadoPor),
         titulo: titulo || TITULO_PROVISORIO, tituloAuto: !titulo,
         descricao: clean_(fields.descricao, 4000),
         maoDeObra: 0, materialManual: 0, materialTotal: 0, total: 0, valorCobrado: '', diferenca: 0,
         inicio: '', termino: '', status: 'aguardando', observacoes: '',
         fotos: [], audios: [], materiais: [], sugestao: null, sugestaoStatus: '',
-        avisos: { novo: now }, historico: [{ tipo: 'criado', por: clean_(fields.criadoPor, 40), em: now }]
+        avisos: { novo: now }, historico: [{ tipo: 'criado', por: autor_(fields.criadoPor), em: now }]
       };
       appendRow_(it);
       return it;
     });
   },
+  /** Mudança de valor (total ou valor a pagar) fica no histórico e faz o serviço voltar para "aguardando". */
   update: function (id, patch, actor) {
+    actor = autor_(actor);
     return mutate_(id, function (it) {
       let valores = false;
+      computeTotals_(it);
+      const antes = { total: it.total, cobrado: it.valorCobrado };
       Object.keys(patch || {}).forEach(function (k) {
         if (EDITABLE.indexOf(k) === -1) return;
         let v = patch[k];
@@ -104,7 +127,17 @@ const ROUTES = {
         if (VALUE_FIELDS.indexOf(k) !== -1) valores = true;
         it[k] = v;
       });
-      if (valores && clean_(actor, 40) !== nomeDono_()) {
+      computeTotals_(it);
+      if (valores && (it.total !== antes.total || String(it.valorCobrado) !== String(antes.cobrado))) {
+        const quem = clean_(actor, 40) || 'Alguém', em = new Date().toISOString();
+        it.historico.push({ tipo: 'valor', de: antes.total, para: it.total, deCobrado: antes.cobrado, paraCobrado: it.valorCobrado, por: quem, em: em });
+        if (it.status !== 'aguardando') {
+          it.historico.push({ tipo: 'status', de: it.status, para: 'aguardando', por: quem + ' (valor alterado)', em: em });
+          it.status = 'aguardando';
+        }
+        if (it.historico.length > 100) it.historico = it.historico.slice(-100);
+      }
+      if (valores && !ehDono_(actor)) {
         it.avisos = it.avisos || {};
         it.avisos.orcamento = new Date().toISOString();
       }
@@ -156,12 +189,21 @@ const ROUTES = {
     return 'data:' + blob.getContentType() + ';base64,' + Utilities.base64Encode(blob.getBytes());
   },
   checkPin: function (pin) { return guardPin_(pin); },
-  /** Qualquer pessoa pode aprovar; cada mudança fica no histórico com o nome de quem fez. */
-  setStatus: function (id, status, por) {
+  /**
+   * Aprovar ou recusar exige o PIN do proprietário e fica registrado em nome dele.
+   * Voltar para "aguardando" não exige PIN (só reabre a decisão), mas registra o nome informado.
+   */
+  setStatus: function (id, status, por, pin) {
     if (STATUSES.indexOf(status) === -1) throw new Error('Status inválido.');
     limite_('status', 120, 3600, 'Muitas mudanças de aprovação em pouco tempo. Tente de novo mais tarde.');
-    const nome = clean_(por, 40);
-    if (!nome) throw new Error('Informe seu nome para registrar a aprovação.');
+    let nome;
+    if (status === 'aguardando') {
+      nome = autor_(por);
+      if (!nome) throw new Error('Informe seu nome para registrar a mudança.');
+    } else {
+      if (!guardPin_(pin)) throw new Error('PIN incorreto.');
+      nome = nomeDono_();
+    }
     let mudou = false;
     const it = mutate_(id, function (x) {
       if (x.status === status) return;
@@ -175,7 +217,7 @@ const ROUTES = {
   /** Ajuste em lote pedido pelo dono: limpa datas e volta todos para "aguardando". Exige PIN. */
   resetAll: function (pin, por) {
     if (!guardPin_(pin)) throw new Error('PIN incorreto.');
-    const nome = clean_(por, 40) || nomeDono_();
+    const nome = autor_(por) || nomeDono_();
     readAll_().forEach(function (item) {
       mutate_(item.id, function (x) {
         x.inicio = ''; x.termino = '';
@@ -395,7 +437,7 @@ function sendMail_(to, subject, intro, it, cta) {
     '<table style="border-collapse:collapse;font-size:14px">' +
     linha('Status', STATUS_LABEL[it.status]) + linha('Mão de obra', brl(it.maoDeObra)) + linha('Material', brl(it.materialTotal)) +
     linha('Total', brl(it.total)) +
-    (it.valorCobrado !== '' ? linha('Valor cobrado', brl(it.valorCobrado)) + linha('Diferença', brl(it.diferenca)) : '') +
+    (it.valorCobrado !== '' ? linha('Valor a pagar', brl(it.valorCobrado)) + linha('Abatimento da dívida', brl(it.diferenca)) : '') +
     linha('Execução', datas) + '</table>' +
     '<p style="font-size:14px">' + esc_(cta) + '</p>' +
     (prop_('PAGE_URL') ? '<p><a href="' + link + '" style="display:inline-block;background:#F2B705;color:#17201C;padding:10px 18px;border-radius:8px;font-weight:700;text-decoration:none">Abrir ' + osNum_(it) + '</a></p>' : '') +
@@ -467,6 +509,28 @@ function migrarParaAcessoRestrito() {
   const conferido = readAll_().length;
   Logger.log('Nova planilha: https://docs.google.com/spreadsheets/d/' + nova.spreadsheetId + '/edit');
   Logger.log('Arquivos copiados: ' + copiados + ' · falhas: ' + falhas + ' · serviços na nova planilha: ' + conferido);
+}
+
+/**
+ * Gera (ou troca) os links pessoais de acesso do Carlos e do Júlio e liga o acesso restrito.
+ * Rodar de novo invalida os links antigos (use se um link vazar ou um aparelho for perdido).
+ * Os links aparecem no Registro de execução; envie cada um só para a pessoa certa.
+ */
+function gerarLinksDeAcesso() {
+  const props = PropertiesService.getScriptProperties();
+  const novo = function () { return (Utilities.getUuid() + Utilities.getUuid()).replace(/-/g, '').slice(0, 40); };
+  props.setProperties({ TOKEN_DONO: novo(), TOKEN_PRESTADOR: novo() });
+  const base = (prop_('PAGE_URL') || 'URL_DA_PAGINA').replace(/#.*$/, '');
+  Logger.log('Acesso restrito LIGADO. Links antigos deixaram de funcionar.');
+  Logger.log('Link do ' + nomeDono_() + ': ' + base + '#k=' + prop_('TOKEN_DONO'));
+  Logger.log('Link do ' + nomePrestador_() + ': ' + base + '#k=' + prop_('TOKEN_PRESTADOR'));
+  if (!prop_('PAGE_URL')) Logger.log('Atenção: configure PAGE_URL nas Propriedades do script para os links saírem completos.');
+}
+/** Desliga o acesso restrito (volta ao modo aberto). Só para emergência. */
+function desligarAcessoRestrito() {
+  const props = PropertiesService.getScriptProperties();
+  props.deleteProperty('TOKEN_DONO'); props.deleteProperty('TOKEN_PRESTADOR');
+  Logger.log('Acesso restrito DESLIGADO: qualquer pessoa com o endereço do script volta a acessar.');
 }
 
 /** Rode pelo menu Executar para conferir se o script ainda alcança a planilha, a pasta e os arquivos. */
@@ -605,12 +669,12 @@ function esc_(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function
 function checkPin_(pin) { const p = prop_('OWNER_PIN'); return !!p && String(pin || '').trim() === p; }
 /** PIN com trava: 5 erros em 15 minutos bloqueiam novas tentativas por 15 minutos. */
 function guardPin_(pin) {
-  const c = CacheService.getScriptCache();
-  if (c.get('pin:lock')) throw new Error('Muitas tentativas de PIN. Tente de novo em 15 minutos.');
-  if (checkPin_(pin)) { c.remove('pin:fail'); return true; }
-  const n = Number(c.get('pin:fail') || 0) + 1;
-  c.put('pin:fail', String(n), 900);
-  if (n >= 5) c.put('pin:lock', '1', 900);
+  const c = CacheService.getScriptCache(), k = 'pin:' + (QUEM_ || 'aberto') + ':';
+  if (c.get(k + 'lock')) throw new Error('Muitas tentativas de PIN. Tente de novo em 15 minutos.');
+  if (checkPin_(pin)) { c.remove(k + 'fail'); return true; }
+  const n = Number(c.get(k + 'fail') || 0) + 1;
+  c.put(k + 'fail', String(n), 900);
+  if (n >= 5) c.put(k + 'lock', '1', 900);
   return false;
 }
 /** Limite simples por janela de tempo (contador no cache do script). */
@@ -657,10 +721,12 @@ function getBlob_(fileId) {
   if (res.getResponseCode() >= 300) throw new Error('Arquivo indisponível.');
   return res.getBlob();
 }
+/** Número em formato brasileiro: "1.500" = 1500, "1.500,50" = 1500.5, "12,5" = 12.5. */
 function num_(v) {
   if (typeof v === 'number') return isFinite(v) ? v : 0;
   let s = String(v == null ? '' : v).replace(/[^\d,.\-]/g, '');
   if (s.indexOf(',') !== -1) s = s.replace(/\./g, '').replace(',', '.');
+  else if (/^-?\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, '');
   const n = parseFloat(s);
   return isFinite(n) ? Math.round(n * 100) / 100 : 0;
 }
