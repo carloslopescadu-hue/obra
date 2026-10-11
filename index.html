@@ -586,13 +586,16 @@ function setItem(it) {
 
 /* ===================== Servidor ===================== */
 var MODE = (window.google && google.script && google.script.run) ? 'gas' : (CONFIG.API_URL ? 'http' : 'demo');
-/* Link pessoal de acesso: ...#k=CODIGO. O código fica guardado neste aparelho e sai da barra de endereço. */
+/* Link pessoal de acesso: ...#k=CODIGO. A chave fica no endereço (e guardada no aparelho), para funcionar
+   em qualquer jeito de abrir: WhatsApp, Safari, favorito ou ícone na Tela de Início. Se o aparelho já tem a chave
+   e o endereço veio sem ela, a página a recoloca, assim "Adicionar à Tela de Início" sempre leva a chave junto. */
 (function () {
-  var m = /(?:^#|&)k=([\w-]{16,})/.exec(location.hash || '');
-  if (!m) return;
-  LS.set('obra.k', m[1]);
-  var resto = location.hash.replace(/(^#|&)k=[\w-]+/, '').replace(/^#&/, '#');
-  try { history.replaceState(null, '', location.pathname + location.search + (resto === '#' ? '' : resto)); } catch (e) {}
+  var h = location.hash || '';
+  var m = /(?:^#|&)k=([\w-]{16,})/.exec(h);
+  if (m) { LS.set('obra.k', m[1]); return; }
+  var k = LS.get('obra.k');
+  if (!k) return;
+  try { history.replaceState(null, '', location.pathname + location.search + (h && h !== '#' ? h + '&k=' + k : '#k=' + k)); } catch (e) {}
 })();
 function call(action) {
   var args = Array.prototype.slice.call(arguments, 1), token = LS.get('obra.k') || '';
@@ -673,7 +676,7 @@ function load() {
     applyConfig(d);
     state.items = []; (d.items || []).forEach(setItem);
     state.loaded = true;
-    var m = /^#os-([\w-]+)$/.exec(location.hash || '');
+    var m = /^#os-([\w-]+)/.exec(location.hash || '');
     if (m && itemById(m[1])) state.openId = m[1];
     render();
   }).catch(function (e) { state.loaded = true; var msg = friendly(e); render(); if (!state.semAcesso) toast('Não consegui carregar: ' + msg); });

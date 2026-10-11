@@ -448,7 +448,9 @@ function sendMail_(to, subject, intro, it, cta) {
   if (!to) return;
   const brl = function (n) { return 'R$ ' + Number(n || 0).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.'); };
   const datas = it.inicio ? (fmtData_(it.inicio) + (it.termino ? ' a ' + fmtData_(it.termino) : '')) : 'a definir';
-  const link = (prop_('PAGE_URL') || '') + '#os-' + it.id;
+  // Com acesso restrito, o link do e-mail leva a chave de quem recebe: abre direto no serviço em qualquer aparelho.
+  const chave = to === emailDono_() ? prop_('TOKEN_DONO') : to === emailPrestador_() ? prop_('TOKEN_PRESTADOR') : '';
+  const link = (prop_('PAGE_URL') || '') + '#os-' + it.id + (chave ? '&k=' + chave : '');
   const linha = function (k, v) { return '<tr><td style="padding:6px 12px 6px 0;color:#59645F">' + k + '</td><td style="padding:6px 0;font-weight:600">' + esc_(v) + '</td></tr>'; };
   const html =
     '<div style="font-family:Arial,Helvetica,sans-serif;color:#17201C;max-width:560px">' +
