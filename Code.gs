@@ -14,6 +14,7 @@
  *   2. Configurações do projeto > Propriedades do script:
  *        ANTHROPIC_API_KEY = chave da API do Claude (console.anthropic.com)
  *        ELEVENLABS_API_KEY = chave da ElevenLabs (elevenlabs.io > Developers > API Keys)
+ *        (conta com residência de dados? a região é detectada sozinha e salva em ELEVENLABS_API_BASE)
  *      Opcionais: EMAIL_DONO, EMAIL_PRESTADOR, NOME_DONO, NOME_PRESTADOR, PAGE_URL,
  *                 OWNER_PIN, CLAUDE_MODEL (padrão claude-sonnet-5-5), AUTO_SUGGEST=false.
  *   3. Implantar > Nova implantação > App da Web — Executar como: Eu · Acesso: Qualquer pessoa.
@@ -248,20 +249,41 @@ const ROUTES = {
 
 /* ---------- Transcrição (ElevenLabs · Scribe; Groq só como reserva) ---------- */
 
+/*
+ * Contas da ElevenLabs com "residência de dados" (UE, Índia, Singapura) só aceitam a chave no endereço
+ * da própria região. Se o servidor global recusar por esse motivo, tentamos as regiões e guardamos a que
+ * funcionar em ELEVENLABS_API_BASE (também pode ser preenchida à mão nas Propriedades do script).
+ */
+const ELEVEN_GLOBAL_ = 'https://api.elevenlabs.io';
+const ELEVEN_REGIOES_ = ['https://api.eu.residency.elevenlabs.io', 'https://api.in.residency.elevenlabs.io', 'https://api.sg.residency.elevenlabs.io'];
+function elevenSTT_(base, key, blob) {
+  const res = UrlFetchApp.fetch(base.replace(/\/+$/, '') + '/v1/speech-to-text', {
+    method: 'post', muteHttpExceptions: true,
+    headers: { 'xi-api-key': key },
+    payload: { file: blob, model_id: prop_('ELEVENLABS_MODEL') || 'scribe_v2', language_code: 'por', tag_audio_events: 'false' }
+  });
+  let body = {};
+  try { body = JSON.parse(res.getContentText() || '{}'); } catch (e) {}
+  const det = body.detail && (body.detail.message || body.detail.status || JSON.stringify(body.detail));
+  return { ok: res.getResponseCode() === 200, code: res.getResponseCode(), text: body.text, erro: det || String(res.getResponseCode()) };
+}
 function transcribe_(blob) {
   const eleven = prop_('ELEVENLABS_API_KEY');
   if (eleven) {
-    const res = UrlFetchApp.fetch('https://api.elevenlabs.io/v1/speech-to-text', {
-      method: 'post', muteHttpExceptions: true,
-      headers: { 'xi-api-key': eleven },
-      payload: { file: blob, model_id: prop_('ELEVENLABS_MODEL') || 'scribe_v2', language_code: 'por', tag_audio_events: 'false' }
-    });
-    const body = JSON.parse(res.getContentText() || '{}');
-    if (res.getResponseCode() !== 200) {
-      const det = body.detail && (body.detail.message || body.detail.status || JSON.stringify(body.detail));
-      throw new Error('Transcrição falhou: ' + (det || res.getResponseCode()));
+    const fixa = prop_('ELEVENLABS_API_BASE');
+    let r = elevenSTT_(fixa || ELEVEN_GLOBAL_, eleven, blob);
+    if (!r.ok && !fixa && /residency/i.test(r.erro)) {
+      for (let i = 0; i < ELEVEN_REGIOES_.length; i++) {
+        const t = elevenSTT_(ELEVEN_REGIOES_[i], eleven, blob);
+        if (t.ok || !/residency|invalid api key/i.test(t.erro)) {
+          r = t;
+          if (t.ok) PropertiesService.getScriptProperties().setProperty('ELEVENLABS_API_BASE', ELEVEN_REGIOES_[i]);
+          break;
+        }
+      }
     }
-    return clean_(body.text, 4000);
+    if (!r.ok) throw new Error('Transcrição falhou: ' + r.erro);
+    return clean_(r.text, 4000);
   }
   const groq = prop_('GROQ_API_KEY');
   if (!groq) return '';
@@ -286,6 +308,7 @@ function testarTranscricao() {
   const blob = Utilities.newBlob(bytes.map(function (b) { return b > 127 ? b - 256 : b; }), 'audio/wav', 'teste.wav');
   Logger.log('Serviço usado: ' + (prop_('ELEVENLABS_API_KEY') ? 'ElevenLabs' : prop_('GROQ_API_KEY') ? 'Groq' : 'nenhum'));
   Logger.log('Resposta: "' + transcribe_(blob) + '" (vazio é o esperado para silêncio)');
+  if (prop_('ELEVENLABS_API_KEY')) Logger.log('Endereço da ElevenLabs em uso: ' + (prop_('ELEVENLABS_API_BASE') || ELEVEN_GLOBAL_));
 }
 
 /* ---------- Sugestão do Claude ---------- */
